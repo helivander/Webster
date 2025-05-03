@@ -6,9 +6,11 @@ import {
   HiOutlineInformationCircle,
   HiOutlinePhotograph,
   HiOutlineTranslate,
+  HiOutlineTemplate,
 } from 'react-icons/hi';
 
 export const TOOLBAR_TABS = [
+  { icon: HiOutlineTemplate, title: 'Models' },
   { icon: HiOutlineArrowsExpand, title: 'Resize' },
   { icon: HiOutlineDownload, title: 'Export' },
   { icon: HiOutlinePhotograph, title: 'Images' },

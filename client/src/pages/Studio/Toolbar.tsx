@@ -8,6 +8,7 @@ import Resize from './tools/Resize';
 import Shapes from './tools/Shapes/Shapes';
 import Texts from './tools/Text/Texts';
 import HotkeysList from './tools/Hotkeys/Hotkeys';
+import Models from './tools/Models/Models';
 
 type Props = {
   stageRef: React.RefObject<Konva.Stage>;
@@ -49,6 +50,9 @@ const Toolbar = ({ stageRef }: Props) => {
         </TabList>
 
         <TabPanels minW="350px" maxW="350px" bgColor="white" overflowY="auto">
+          <TabPanel>
+            <Models />
+          </TabPanel>
           <TabPanel>
             <Resize />
           </TabPanel>
