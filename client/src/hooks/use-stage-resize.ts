@@ -15,8 +15,8 @@ type Props = {
 const useStageResize = ({ stageRef }: Props) => {
   const dispatch = useDispatch();
   const { width, height, scale } = useAppSelector((state) => state.frame);
-  const [boxWidth, setBoxWidth] = useState(500);
-  const [boxHeight, setBoxHeight] = useState(500);
+  const [boxWidth, setBoxWidth] = useState(850);
+  const [boxHeight, setBoxHeight] = useState(850);
 
   const isKeyPressed = useKeyPress(KeyType.DRAG_STAGE);
 

@@ -7,7 +7,11 @@ import { useUpdateCanvasMutation } from '~/store/api/canvas-slice';
 import { ICanvasPayload } from '~/types/canvas';
 import { ICreate, createSchema } from '~/validation/canvas';
 
-const CanvasUpdateForm = () => {
+type Props = {
+  onClose: () => void;
+};
+
+const CanvasUpdateForm = ({ onClose }: Props) => {
   const { stage } = useAppSelector((state) => state.frame);
   const [update, { isLoading }] = useUpdateCanvasMutation();
   const toast = useToast();
@@ -39,28 +43,29 @@ const CanvasUpdateForm = () => {
     });
 
     toast({
-      title: 'Your canvas was successfully updated.',
+      title: 'Seu canvas foi atualizado com sucesso.',
       status: 'success',
       duration: 5000,
       isClosable: true,
     });
+    onClose();
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <VStack spacing="4">
         <FormControl isInvalid={!!errors.name} isRequired>
-          <FormLabel htmlFor="name">Name</FormLabel>
-          <Input id="name" placeholder="name" {...register('name')} />
+          <FormLabel htmlFor="name">Nome</FormLabel>
+          <Input id="name" placeholder="nome" {...register('name')} />
           <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={!!errors.description} isRequired>
-          <FormLabel htmlFor="description">Description</FormLabel>
-          <Input id="description" placeholder="description" {...register('description')} />
+          <FormLabel htmlFor="description">Descrição</FormLabel>
+          <Input id="description" placeholder="descrição" {...register('description')} />
           <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
         </FormControl>
         <Button type="submit" w="200px" colorScheme="pink" isLoading={isLoading}>
-          Save
+          Salvar
         </Button>
       </VStack>
     </form>

@@ -32,8 +32,12 @@ const ProfileView = () => {
           <ModalBody>
             <VStack spacing={4}>
               <Avatar size="xl" name={user?.name} src={user?.avatar} />
-              <Text fontSize="lg" fontWeight="bold">{user?.name}</Text>
-              <Text fontSize="md" color="gray.600">Email: {user?.email}</Text>
+              <Text fontSize="lg" fontWeight="bold">
+                {user?.name}
+              </Text>
+              <Text fontSize="md" color="gray.600">
+                Email: {user?.email}
+              </Text>
             </VStack>
           </ModalBody>
         </ModalContent>
@@ -42,4 +46,4 @@ const ProfileView = () => {
   );
 };
 
-export default ProfileView; 
+export default ProfileView;

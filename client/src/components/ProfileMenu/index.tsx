@@ -1,4 +1,21 @@
-import { Menu, MenuButton, MenuList, MenuItem, Button, Avatar, Text, MenuDivider, Modal, ModalOverlay, ModalBody, ModalContent, ModalHeader, ModalCloseButton, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
+  Avatar,
+  Text,
+  MenuDivider,
+  Modal,
+  ModalOverlay,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useAppSelector } from '~/hooks/use-app-selector';
 import { useDispatch } from 'react-redux';
@@ -40,8 +57,12 @@ const ProfileMenu = () => {
           <ModalBody>
             <VStack spacing={4}>
               <Avatar size="xl" name={user?.name} src={user?.avatar} />
-              <Text fontSize="lg" fontWeight="bold">{user?.name}</Text>
-              <Text fontSize="md" color="gray.600">Email: {user?.email}</Text>
+              <Text fontSize="lg" fontWeight="bold">
+                {user?.name}
+              </Text>
+              <Text fontSize="md" color="gray.600">
+                Email: {user?.email}
+              </Text>
             </VStack>
           </ModalBody>
         </ModalContent>
@@ -54,8 +75,12 @@ const ProfileMenu = () => {
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
-              <Text fontSize="lg" fontWeight="bold">Configurações</Text>
-              <Text fontSize="md" color="gray.600">Aqui você pode configurar suas preferências.</Text>
+              <Text fontSize="lg" fontWeight="bold">
+                Configurações
+              </Text>
+              <Text fontSize="md" color="gray.600">
+                Aqui você pode configurar suas preferências.
+              </Text>
             </VStack>
           </ModalBody>
         </ModalContent>
