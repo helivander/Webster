@@ -20,10 +20,16 @@ const ImageObject = ({ obj, onSelect }: Props) => {
   const [size, setSize] = useState({ width: MAX_IMAGE_WIDTH, height: MAX_IMAGE_HEIGHT });
   const imgRef = useRef() as RefObject<Image>;
 
-  const filters = useMemo(
-    () => (filterNames[0] ? filterNames.map((f) => Konva.Filters[f]).filter((f) => f) : [Konva.Filters.Brighten]),
-    [filterNames],
-  );
+  const filters = useMemo(() => {
+    const validFilters = filterNames
+      .map((f) => {
+        const filter = Konva.Filters[f];
+        return typeof filter === 'function' ? filter : null;
+      })
+      .filter((f): f is typeof Konva.Filters[keyof typeof Konva.Filters] => f !== null);
+
+    return validFilters.length > 0 ? validFilters : [Konva.Filters.Brighten];
+  }, [filterNames]);
 
   const cacheOptions = { imageSmoothingEnabled: true, width: size.width, height: size.height };
 
@@ -42,12 +48,31 @@ const ImageObject = ({ obj, onSelect }: Props) => {
   }, [image]);
 
   useEffect(() => {
-    if (imgRef.current && filterValues.brighten) {
-      imgRef.current.brightness(filterValues.brighten);
+    if (!imgRef.current) return;
+
+    const img = imgRef.current;
+    
+    // Aplica os valores dos filtros
+    if (filterValues.brighten !== undefined) {
+      img.brightness(filterValues.brighten);
     }
-    imgRef.current?.filters(filters);
-    imgRef.current?.cache(cacheOptions);
-  }, [image, data, filterValues, filterNames]);
+    if (filterValues.contrast !== undefined) {
+      img.contrast(filterValues.contrast);
+    }
+    if (filterValues.red !== undefined) {
+      img.red(filterValues.red);
+    }
+    if (filterValues.green !== undefined) {
+      img.green(filterValues.green);
+    }
+    if (filterValues.blue !== undefined) {
+      img.blue(filterValues.blue);
+    }
+
+    // Aplica os filtros booleanos
+    img.filters(filters);
+    img.cache(cacheOptions);
+  }, [image, data, filterValues, filterNames, filters]);
 
   return (
     <KonvaImage
@@ -58,7 +83,6 @@ const ImageObject = ({ obj, onSelect }: Props) => {
       onDragStart={onDragStart}
       onDragEnd={(e) => onDragEnd(e, obj)}
       {...props}
-      {...filterValues}
       {...size}
     />
   );

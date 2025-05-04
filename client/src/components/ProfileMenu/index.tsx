@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ProfileMenu = () => {
   const dispatch = useDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, isLoggedIn } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isSettingsOpen, onOpen: onSettingsOpen, onClose: onSettingsClose } = useDisclosure();
@@ -34,6 +34,18 @@ const ProfileMenu = () => {
     navigate('/auth/sign-in');
   };
 
+  const handleLogin = () => {
+    navigate('/auth/sign-in');
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <Button colorScheme="pink" onClick={handleLogin}>
+        Entrar
+      </Button>
+    );
+  }
+
   return (
     <>
       <Menu>
@@ -42,17 +54,17 @@ const ProfileMenu = () => {
           <Text display={{ base: 'none', md: 'inline' }}>{user?.name}</Text>
         </MenuButton>
         <MenuList>
-          <MenuItem onClick={onOpen}>Profile</MenuItem>
-          <MenuItem onClick={onSettingsOpen}>Settings</MenuItem>
+          <MenuItem onClick={onOpen}>Perfil</MenuItem>
+          <MenuItem onClick={onSettingsOpen}>Configurações</MenuItem>
           <MenuDivider />
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          <MenuItem onClick={handleLogout}>Sair</MenuItem>
         </MenuList>
       </Menu>
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent sx={{ p: 4 }}>
-          <ModalHeader>Profile</ModalHeader>
+          <ModalHeader>Perfil</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
@@ -71,7 +83,7 @@ const ProfileMenu = () => {
       <Modal isOpen={isSettingsOpen} onClose={onSettingsClose} isCentered scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent sx={{ p: 4 }}>
-          <ModalHeader>Settings</ModalHeader>
+          <ModalHeader>Configurações</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
