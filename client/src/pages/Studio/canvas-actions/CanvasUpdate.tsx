@@ -8,7 +8,7 @@ const CanvasUpdate = () => {
   return (
     <Box sx={{ w: '100%' }}>
       <Button variant="ghost" colorScheme="pink" onClick={onOpen} sx={{ w: '100%' }}>
-        Update this canvas
+        Update this model
       </Button>
       <DrawerWrapper isOpen={isOpen} onClose={onClose} title="Update This Canvas">
         <CanvasUpdateForm />

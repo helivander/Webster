@@ -47,7 +47,7 @@ function Navbar() {
           mb="0"
           fontFamily={LOGO_FONT}
         >
-          Webster
+          Encartei
         </Heading>
       </Box>
       <Spacer />

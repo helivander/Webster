@@ -5,9 +5,7 @@ import Export from './tools/Export';
 import ImageUpload from './tools/ImageUpload/ImageUpload';
 import Images from './tools/Images/Images';
 import Resize from './tools/Resize';
-import Shapes from './tools/Shapes/Shapes';
 import Texts from './tools/Text/Texts';
-import HotkeysList from './tools/Hotkeys/Hotkeys';
 import Models from './tools/Models/Models';
 
 type Props = {
@@ -67,12 +65,6 @@ const Toolbar = ({ stageRef }: Props) => {
           </TabPanel>
           <TabPanel p="0" h="100%" overflow="hidden">
             <Texts />
-          </TabPanel>
-          <TabPanel>
-            <Shapes />
-          </TabPanel>
-          <TabPanel>
-            <HotkeysList />
           </TabPanel>
         </TabPanels>
       </Tabs>
