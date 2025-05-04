@@ -1,5 +1,4 @@
-import { Box, Button, useDisclosure } from '@chakra-ui/react';
-import DrawerWrapper from '~/components/Drawer/DrawerWrapper';
+import { Box, Button, Modal, ModalOverlay, ModalBody, ModalContent, ModalHeader, ModalCloseButton, useDisclosure } from '@chakra-ui/react';
 import CanvasCreateForm from './CanvasCreateForm';
 
 const CanvasCreate = () => {
@@ -10,9 +9,16 @@ const CanvasCreate = () => {
       <Button variant="ghost" colorScheme="pink" onClick={onOpen} sx={{ w: '100%' }}>
         Create a canvas
       </Button>
-      <DrawerWrapper isOpen={isOpen} onClose={onClose} title="Create a Canvas">
-        <CanvasCreateForm />
-      </DrawerWrapper>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered scrollBehavior="inside">
+        <ModalOverlay />
+        <ModalContent sx={{ p: 4 }}>
+          <ModalHeader>Create a Canvas</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <CanvasCreateForm />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

@@ -11,6 +11,7 @@ import CanvasesView from '../canvas-actions/CanvasesView';
 import CanvasUpdate from '../canvas-actions/CanvasUpdate';
 import { useLazyGetCanvasQuery } from '~/store/api/canvas-slice';
 import { resetStage, setStage } from '~/store/slices/frame-slice';
+import ProfileMenu from '~/components/ProfileMenu';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -78,9 +79,7 @@ function Navbar() {
                 </MenuList>
               </Menu>
             </Box>
-            <Button colorScheme="gray" mr="4" onClick={handleLogout}>
-              Logout
-            </Button>
+            <ProfileMenu />
           </>
         ) : (
           <Button colorScheme="gray" mr="4" as={Link} to="/auth/sign-in">

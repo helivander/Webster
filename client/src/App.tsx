@@ -10,6 +10,7 @@ import { useLazyGetCanvasesQuery } from './store/api/canvas-slice';
 import Loader from './components/Loader/Loader';
 import { useDispatch } from 'react-redux';
 import { setStage } from './store/slices/frame-slice';
+import ProfileView from './pages/Studio/canvas-actions/ProfileView';
 
 function App() {
   const { stage } = useAppSelector((state) => state.frame);
@@ -39,6 +40,7 @@ function App() {
   ) : (
     <Routes>
       <Route path="/" element={<Studio />} />
+      <Route path="/studio/profile" element={<ProfileView />} />
       <Route element={<AuthLayout />}>
         <Route path="/auth/sign-in" element={<SignIn />} />
         <Route path="/auth/sign-up" element={<SignUp />} />

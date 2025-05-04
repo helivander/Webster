@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { VStack, Text, SimpleGrid, IconButton, Flex, Input, InputGroup } from '@chakra-ui/react';
+import { VStack, Text, SimpleGrid, IconButton, Flex, Input, InputGroup, Modal, ModalOverlay, ModalBody, ModalContent, ModalHeader, ModalCloseButton, useDisclosure } from '@chakra-ui/react';
 import { useGetCanvasesQuery, useCreateCanvasMutation } from '~/store/api/canvas-slice';
 import CanvasViewItem from '~/pages/Studio/canvas-actions/CanvasViewItem';
 import { AddIcon } from '@chakra-ui/icons';
+import CanvasCreateForm from '~/pages/Studio/canvas-actions/CanvasCreateForm';
 
 const Models = () => {
   // estado para controlar o termo de busca
@@ -12,6 +13,7 @@ const Models = () => {
     skip: 0,
     take: 10,
   });
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   if (isLoading) {
     return <Text>Carregando modelos...</Text>;
@@ -23,13 +25,7 @@ const Models = () => {
         <IconButton
           aria-label="Criar novo modelo"
           icon={<AddIcon />}
-          onClick={() =>
-            createCanvas({
-              name: 'Novo modelo',
-              description: '',
-              content: '',
-            })
-          }
+          onClick={onOpen}
           isLoading={isCreating}
         />
         <InputGroup ml={2} flex="1">
@@ -62,6 +58,17 @@ const Models = () => {
             ))}
         </SimpleGrid>
       )}
+
+      <Modal isOpen={isOpen} onClose={onClose} isCentered scrollBehavior="inside">
+        <ModalOverlay />
+        <ModalContent sx={{ p: 4 }}>
+          <ModalHeader>Create a Canvas</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <CanvasCreateForm />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 };
