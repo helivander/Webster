@@ -1,7 +1,7 @@
 import { HStack, Icon, IconButton, Spacer, Tooltip, useColorModeValue } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { HiOutlineRefresh, HiOutlineReply } from 'react-icons/hi';
+import { HiOutlineRefresh, HiOutlineReply, HiOutlineTrash } from 'react-icons/hi';
 import { EDITING_TOOLBAR_HEIGHT } from '~/consts/components';
 import { KeyType } from '~/consts/keys';
 import { useAppSelector } from '~/hooks/use-app-selector';
@@ -13,11 +13,13 @@ import ImageEditing from './ImageEditing/ImageEditing';
 import ShapesEditing from './ShapesEditing/ShapesEditing';
 import TextEditing from './TextEditing/TextEditing';
 import CanvasContentSave from '../canvas-actions/CanvasContentSave';
+import useStageObject from '~/hooks/use-stage-object';
 
 const EditingToolbar = () => {
   const stageObjects = useAppSelector(stageObjectSelector.selectAll);
   const { selected } = useAppSelector((state) => state.selected);
   const { isLoggedIn } = useAppSelector((state) => state.auth);
+  const { removeOne } = useStageObject();
 
   const { savePast, goBack, goForward } = useHistory();
 
@@ -35,6 +37,13 @@ const EditingToolbar = () => {
     goForward();
   });
 
+  useHotkeys('delete', (e) => {
+    e.preventDefault();
+    if (selected.length === 1) {
+      handleDelete();
+    }
+  });
+
   useEffect(() => {
     savePast(stageObjects);
   }, [stageObjects]);
@@ -47,6 +56,12 @@ const EditingToolbar = () => {
   };
 
   const selectedObject = getSelectedObject();
+
+  const handleDelete = () => {
+    if (selectedObject) {
+      removeOne(selectedObject.id);
+    }
+  };
 
   const renderEditing = () => {
     switch (selectedObject?.data.type) {
@@ -81,6 +96,17 @@ const EditingToolbar = () => {
         />
       </Tooltip>
       {renderEditing()}
+      {selectedObject && (
+        <Tooltip hasArrow label="Excluir elemento (Delete)" placement="bottom" openDelay={500}>
+          <IconButton
+            aria-label="Excluir elemento"
+            icon={<Icon as={HiOutlineTrash} boxSize={5} />}
+            onClick={handleDelete}
+            colorScheme="red"
+            variant="ghost"
+          />
+        </Tooltip>
+      )}
       {isLoggedIn && (
         <>
           <Spacer />
