@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, HStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, IconButton, useColorMode } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { LOGO_FONT } from '~/consts/components';
@@ -7,11 +7,13 @@ import { setStage } from '~/store/slices/frame-slice';
 import { useEffect } from 'react';
 import { useLazyGetCanvasQuery } from '~/store/api/canvas-slice';
 import ProfileMenu from '~/components/ProfileMenu';
+import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const { stage } = useAppSelector((state) => state.frame);
   const [getCanvas] = useLazyGetCanvasQuery();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
     if (stage.id) {
@@ -41,6 +43,14 @@ const Navbar = () => {
           </Heading>
         </Link>
         <HStack spacing={4} ml="auto" pr={4}>
+          <IconButton
+            aria-label="Alternar modo escuro"
+            icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+            onClick={toggleColorMode}
+            variant="ghost"
+            color="white"
+            _hover={{ bg: 'gray.700' }}
+          />
           <ProfileMenu />
         </HStack>
       </Flex>

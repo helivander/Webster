@@ -1,4 +1,4 @@
-import { FormControl, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
+import { FormControl, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, useColorModeValue } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { HiOutlineSearch, HiOutlineX } from 'react-icons/hi';
 
@@ -25,11 +25,14 @@ const SearchForm = ({ onSubmit, onReset, placeholder }: Props) => {
     onReset();
   };
 
+  const inputBg = useColorModeValue('gray.50', 'gray.800');
+  const inputColor = useColorModeValue('gray.900', 'gray.100');
+
   return (
     <form style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
       <FormControl>
         <HStack>
-          <InputGroup>
+          <InputGroup bg={inputBg} borderRadius="md">
             <InputLeftElement>
               <Icon as={HiOutlineSearch} boxSize={5} />
             </InputLeftElement>
@@ -39,6 +42,8 @@ const SearchForm = ({ onSubmit, onReset, placeholder }: Props) => {
               focusBorderColor="pink.500"
               placeholder={placeholder}
               {...register('query')}
+              bg={inputBg}
+              color={inputColor}
             />
           </InputGroup>
           {isSubmitted && (

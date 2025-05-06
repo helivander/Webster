@@ -56,4 +56,11 @@ $ yarn run test:e2e
 
 # test coverage
 $ yarn run test:cov
+
+#Comandos GIT
+#Você pode remover todos os arquivos não rastreados com:
+$ git clean -fd
+$ git fetch origin
+$ git reset --hard origin/master
+
 ```

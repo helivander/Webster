@@ -14,6 +14,7 @@ import {
   Button,
   useDisclosure,
   ModalCloseButton,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
@@ -25,7 +26,7 @@ import CanvasUpdateForm from './CanvasUpdateForm';
 type Props = ICanvas & { onClose: VoidFunction };
 
 const formatDate = (date: string) =>
-  new Intl.DateTimeFormat('en-US', {
+  new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(date));
@@ -36,6 +37,7 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose }: Props) =>
   const toast = useToast();
   const { isOpen: isDeleteModalOpen, onOpen: onOpenDeleteModal, onClose: onCloseDeleteModal } = useDisclosure();
   const { isOpen: isEditModalOpen, onOpen: onOpenEditModal, onClose: onCloseEditModal } = useDisclosure();
+  const hoverBg = useColorModeValue('gray.100', 'gray.700');
 
   const changeStage = (stage: IStageState) => {
     dispatch(setStage({ ...stage }));
@@ -62,7 +64,7 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose }: Props) =>
       <Card
         onClick={() => changeStage({ id, name, description })}
         variant="outline"
-        _hover={{ bgColor: 'gray.100', cursor: 'pointer' }}
+        _hover={{ bgColor: hoverBg, cursor: 'pointer' }}
         sx={{ w: '100%', p: 4, borderRadius: '10px' }}
       >
         <VStack spacing={2} sx={{ alignItems: 'flex-start', w: '100%' }}>

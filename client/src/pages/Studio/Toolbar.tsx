@@ -1,4 +1,4 @@
-import { Flex, Icon, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
+import { Flex, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from '@chakra-ui/react';
 import Konva from 'konva';
 import { TOOLBAR_TABS } from '~/consts/components';
 import Export from './tools/Export';
@@ -13,8 +13,16 @@ type Props = {
 };
 
 const Toolbar = ({ stageRef }: Props) => {
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const bgSidebar = useColorModeValue('gray.100', 'gray.900');
+  const tabBg = useColorModeValue('gray.100', 'gray.900');
+  const tabSelectedBg = useColorModeValue('white', 'gray.800');
+  const tabSelectedColor = useColorModeValue('pink.500', 'pink.300');
+  const tabHoverColor = useColorModeValue('pink.500', 'pink.200');
+  const tabPanelBg = useColorModeValue('white', 'gray.800');
+
   return (
-    <Flex h="100%" borderRight="2px" borderColor="gray.200">
+    <Flex h="100%" borderRight="2px" borderColor={borderColor}>
       <Tabs
         isLazy
         lazyBehavior="keepMounted"
@@ -23,7 +31,7 @@ const Toolbar = ({ stageRef }: Props) => {
         colorScheme="pink"
         h="100%"
         id="toolbar"
-        bgColor="gray.100"
+        bgColor={bgSidebar}
       >
         <TabList>
           {TOOLBAR_TABS.map((t, i) => (
@@ -31,15 +39,15 @@ const Toolbar = ({ stageRef }: Props) => {
               px="4"
               py="4"
               key={i}
-              bgColor="gray.100"
+              bgColor={tabBg}
               display="flex"
               flexDir="column"
               alignItems="center"
               justifyContent="center"
               fontSize="12px"
               fontWeight="600"
-              _selected={{ bgColor: 'white', color: 'pink.500' }}
-              _hover={{ color: 'pink.500' }}
+              _selected={{ bgColor: tabSelectedBg, color: tabSelectedColor }}
+              _hover={{ color: tabHoverColor }}
             >
               <Icon as={t.icon} boxSize={6} />
               {t.title}
@@ -47,7 +55,7 @@ const Toolbar = ({ stageRef }: Props) => {
           ))}
         </TabList>
 
-        <TabPanels minW="350px" maxW="350px" bgColor="white" overflowY="auto">
+        <TabPanels minW="350px" maxW="350px" bgColor={tabPanelBg} overflowY="auto">
           <TabPanel>
             <Models />
           </TabPanel>
