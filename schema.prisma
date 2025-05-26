@@ -8,17 +8,13 @@ generator client {
   previewFeatures = ["fullTextSearch", "extendedWhereUnique"]
 }
 
+// Mantendo exatamente a mesma estrutura do User atual
 model User {
   id               String    @id @default(uuid()) @db.Uuid
   email            String    @unique @db.VarChar(255)
   username         String    @db.VarChar(50)
   password         String    @db.VarChar(255)
   isEmailConfirmed Boolean   @default(false) @db.Boolean
-  companyId        String?   @db.Uuid
-  foto             String?   @db.VarChar(500)
-  createdAt        DateTime  @default(now()) @db.Timestamp
-  updatedAt        DateTime  @default(now()) @db.Timestamp
-  deletedAt        DateTime? @db.Timestamp
   
   // Relacionamentos
   canvases         Canvas[]
@@ -174,5 +170,4 @@ enum TipoMidia {
   D // Digital
   I // Impresso
   V // Video
-}
-
+} 
