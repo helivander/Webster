@@ -36,11 +36,17 @@ async function bootstrap() {
       directives: {
         defaultSrc: [`'self'`],
         styleSrc: [`'self'`, `'unsafe-inline'`],
-        imgSrc: [`'self'`, 'data:', 'validator.swagger.io', 'localhost:*', 'http://localhost:*'],
+        imgSrc: [
+          `'self'`,
+          'data:',
+          'validator.swagger.io',
+          'localhost:*',
+          'http://localhost:*',
+        ],
         scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
       },
     },
-    crossOriginResourcePolicy: { policy: "cross-origin" }
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   });
 
   const prismaService = app.get(PrismaService);

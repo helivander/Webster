@@ -1,4 +1,8 @@
-import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
 import { UpdateEmpresaDto } from './dto/update-empresa.dto';
 import { PrismaService } from '../../shared/services/prisma.service';
@@ -12,7 +16,9 @@ export class EmpresaService {
     createEmpresaDto: CreateEmpresaDto,
     usuarioId: string,
   ): Promise<Empresa> {
-    const existingEmpresa = await this.prisma.empresa.findFirst({ where: { usuarioId, deletedAt: null } });
+    const existingEmpresa = await this.prisma.empresa.findFirst({
+      where: { usuarioId, deletedAt: null },
+    });
     if (existingEmpresa) {
       throw new ForbiddenException('Usuário já possui uma empresa cadastrada.');
     }
@@ -57,11 +63,15 @@ export class EmpresaService {
     });
 
     if (!empresaToUpdate) {
-      throw new NotFoundException(`Empresa com ID ${id} não encontrada para atualização.`);
+      throw new NotFoundException(
+        `Empresa com ID ${id} não encontrada para atualização.`,
+      );
     }
 
     if (empresaToUpdate.usuarioId !== usuarioId) {
-      throw new ForbiddenException('Você não tem permissão para atualizar esta empresa.');
+      throw new ForbiddenException(
+        'Você não tem permissão para atualizar esta empresa.',
+      );
     }
 
     return this.prisma.empresa.update({
@@ -76,13 +86,17 @@ export class EmpresaService {
     });
 
     if (!empresaToRemove) {
-      throw new NotFoundException(`Empresa com ID ${id} não encontrada para remoção.`);
+      throw new NotFoundException(
+        `Empresa com ID ${id} não encontrada para remoção.`,
+      );
     }
 
     if (empresaToRemove.usuarioId !== usuarioId) {
-      throw new ForbiddenException('Você não tem permissão para remover esta empresa.');
+      throw new ForbiddenException(
+        'Você não tem permissão para remover esta empresa.',
+      );
     }
-    
+
     return this.prisma.empresa.update({
       where: { id },
       data: { deletedAt: new Date() },
