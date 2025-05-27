@@ -106,7 +106,10 @@ describe('MarcaService', () => {
       const result = await service.update(mockMarca.id, updateData);
 
       expect(result).toEqual({ ...mockMarca, ...updateData });
-      expect(mockRepository.update).toHaveBeenCalledWith(mockMarca.id, updateData);
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        mockMarca.id,
+        updateData,
+      );
     });
 
     it('should throw NotFoundException when updating non-existent marca', async () => {
@@ -140,4 +143,4 @@ describe('MarcaService', () => {
       );
     });
   });
-}); 
+});

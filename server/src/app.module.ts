@@ -7,6 +7,8 @@ import { UserModule } from './modules/user/user.module';
 import { CanvasModule } from './modules/canvas/canvas.module';
 import { EmpresaModule } from './modules/empresa/empresa.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
+import { UploadModule } from './modules/upload/upload.module';
+// import { UploadController } from './modules/upload.controller'; // Remover esta linha
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { PrismaModule } from './shared/prisma/prisma.module';
     UserModule,
     CanvasModule,
     EmpresaModule,
+    UploadModule,
   ],
-  providers: [LoggerService], // PrismaService removido de providers
+  providers: [LoggerService],
+  // controllers: [UploadController], // Remover UploadController daqui
 })
 export class AppModule {}

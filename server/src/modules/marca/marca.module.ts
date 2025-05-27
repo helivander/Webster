@@ -9,4 +9,4 @@ import { PrismaService } from '../../shared/services/prisma.service';
   providers: [MarcaService, MarcaRepository, PrismaService],
   exports: [MarcaService],
 })
-export class MarcaModule {} 
+export class MarcaModule {}

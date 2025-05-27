@@ -42,7 +42,13 @@ class AppConfig {
   }
 
   getPort(): string | number {
-    return this.getValue('PORT') || defaultPort;
+    return this.getValue('PORT', false) || defaultPort;
+  }
+
+  getServerUrl(): string {
+    const port = this.getPort();
+    const host = this.getValue('HOST', false) || 'localhost';
+    return this.getValue('SERVER_URL', false) || `http://${host}:${port}`;
   }
 
   getFrontApiLink(): string {

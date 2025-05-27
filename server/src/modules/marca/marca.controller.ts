@@ -46,4 +46,4 @@ export class MarcaController {
   async remove(@Param('id') id: string): Promise<Marca> {
     return this.marcaService.delete(id);
   }
-} 
+}

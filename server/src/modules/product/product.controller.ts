@@ -85,4 +85,4 @@ export class ProductController {
   ): Promise<ProductResponseDto> {
     return this.productService.remove(id);
   }
-} 
+}

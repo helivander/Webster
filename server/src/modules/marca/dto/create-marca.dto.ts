@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength, IsUrl } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateMarcaDto {
   @IsString({ message: 'O nome deve ser uma string' })
@@ -16,4 +22,4 @@ export class CreateMarcaDto {
   @IsOptional()
   @MaxLength(255, { message: 'A descrição deve ter no máximo 255 caracteres' })
   descricao?: string;
-} 
+}

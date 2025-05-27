@@ -33,4 +33,4 @@ export class MarcaService {
     await this.findById(id); // Verifica se existe
     return this.marcaRepository.softDelete(id);
   }
-} 
+}
