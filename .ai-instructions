@@ -1,0 +1,330 @@
+# Webster Project - AI Instructions
+
+## 🎯 Visão Geral do Projeto
+O Webster é uma aplicação full-stack para criação e gerenciamento de encartes digitais e impressos, com foco em supermercados e varejo.
+
+## 🏗️ Arquitetura do Projeto
+
+### Backend (NestJS + Prisma)
+- **Localização**: `/server/`
+- **Framework**: NestJS com TypeScript
+- **Banco de dados**: PostgreSQL com Prisma ORM
+- **Autenticação**: JWT com Passport
+- **Estrutura**: Modular (modules/auth, modules/canvas, etc.)
+
+### Frontend (React + Vite)
+- **Localização**: `/client/`
+- **Framework**: React com TypeScript
+- **Build tool**: Vite
+- **Estado**: Redux Toolkit
+- **UI**: Componentes customizados
+
+### Banco de Dados
+- **Schema**: `/server/src/prisma/schema.prisma` (ÚNICO schema válido)
+- **Migrações**: `/server/src/prisma/migrations/`
+
+## 📁 Estrutura de Diretórios
+
+```
+Webster/
+├── server/                 # Backend NestJS
+│   ├── src/
+│   │   ├── modules/       # Módulos da aplicação
+│   │   ├── prisma/        # Schema e migrações
+│   │   ├── shared/        # Utilitários compartilhados
+│   │   └── common/        # Guards, interceptors, etc.
+│   └── package.json
+├── client/                # Frontend React
+│   ├── src/
+│   │   ├── components/    # Componentes React
+│   │   ├── store/         # Redux store
+│   │   └── utils/         # Utilitários
+│   └── package.json
+└── README.md
+```
+
+## 🎨 Padrões de Código
+
+### Backend (NestJS)
+- **DTOs**: Sempre usar class-validator e class-transformer
+- **Responses**: Usar DTOs específicos para responses (ex: UserResponseDto)
+- **Modules**: Estrutura modular clara (controller, service, module)
+- **Prisma**: 
+  - Schema em `/server/src/prisma/schema.prisma`
+  - Sempre gerar client após mudanças: `npx prisma generate --schema ./src/prisma/schema.prisma`
+  - Migrações: `npx prisma migrate dev --schema ./src/prisma/schema.prisma`
+
+### Frontend (React)
+- **Componentes**: Functional components com hooks
+- **Estado**: Redux Toolkit para estado global
+- **Tipagem**: TypeScript rigoroso
+- **Estilo**: CSS modules ou styled-components
+
+## 🔧 Comandos Importantes
+
+### Backend
+```bash
+cd server
+npm yarn dev          # Desenvolvimento
+npm yarn build        # Build para produção
+npx prisma generate --schema ./src/prisma/schema.prisma  # Gerar client
+npx prisma migrate dev --schema ./src/prisma/schema.prisma  # Migração
+```
+
+### Frontend
+```bash
+cd client
+npm yarn dev          # Desenvolvimento
+npm yarn build        # Build para produção
+```
+
+## 🚨 Regras Importantes
+
+### ❌ NÃO FAZER:
+1. **Nunca** criar schemas Prisma fora de `/server/src/prisma/`
+2. **Nunca** duplicar dependências do Prisma na raiz
+3. **Nunca** modificar o schema sem criar migração
+4. **Nunca** usar `any` no TypeScript sem justificativa
+
+### ✅ SEMPRE FAZER:
+1. **Sempre** usar DTOs para responses da API
+2. **Sempre** validar inputs com class-validator
+3. **Sempre** gerar Prisma client após mudanças no schema
+4. **Sempre** usar TypeScript rigoroso
+5. **Sempre** seguir a estrutura modular do NestJS
+
+## 🗃️ Modelos do Banco de Dados
+
+### User
+```typescript
+{
+  id: string (UUID)
+  email: string (unique)
+  username: string
+  password: string (hash)
+  isEmailConfirmed: boolean
+  companyId?: string
+  foto?: string
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  canvases: Canvas[]
+  empresas: Empresa[]
+  templates: Template[]
+  encartes: Encarte[]
+}
+```
+
+### Canvas
+```typescript
+{
+  id: string (UUID)
+  authorId: string (FK -> User)
+  name: string
+  description: string
+  content: Json
+  createdAt: DateTime
+  updatedAt: DateTime
+  
+  // Relacionamentos
+  author: User
+}
+```
+
+### Marca
+```typescript
+{
+  id: string (UUID)
+  nome: string
+  logo?: string
+  descricao?: string
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  produtos: Produto[]
+}
+```
+
+### Produto
+```typescript
+{
+  id: string (UUID)
+  marcaId: string (FK -> Marca)
+  nome: string
+  preco: Decimal
+  descricao?: string
+  tags?: string
+  adicional?: string
+  foto1: string
+  foto2?: string
+  foto3?: string
+  tipo: string
+  barcode?: string
+  codsys?: string
+  descricaocurta?: string
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  marca: Marca
+  encarteItems: EncarteItem[]
+  produtoUsos: ProdutoUso[]
+}
+```
+
+### Template
+```typescript
+{
+  id: string (UUID)
+  nome: string
+  largura: number
+  altura: number
+  quantImagem: number (default: 1)
+  imgFundo?: string
+  fonte?: string
+  textoCabecalho?: string
+  textoRodape?: string
+  midia: TipoMidia (D | I | V)
+  dpi?: number
+  authorId: string (FK -> User)
+  description?: string
+  conteudoJson?: Json
+  carimboPreco?: string
+  carimboTituloProd?: string
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  author: User
+  encartes: Encarte[]
+}
+```
+
+### Empresa
+```typescript
+{
+  id: string (UUID)
+  name: string
+  cnpj: string (unique)
+  address: string
+  phone: string
+  email: string
+  logo?: string
+  description?: string
+  usuarioId: string (FK -> User)
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  usuario: User
+  encartes: Encarte[]
+  produtoUsos: ProdutoUso[]
+}
+```
+
+### Encarte
+```typescript
+{
+  id: string (UUID)
+  userId: string (FK -> User)
+  modelId: string (FK -> Template)
+  empresaId: string (FK -> Empresa)
+  encarteJson?: Json
+  avisosEncarte?: string
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  user: User
+  template: Template
+  empresa: Empresa
+  encarteItems: EncarteItem[]
+}
+```
+
+### EncarteItem
+```typescript
+{
+  id: string (UUID)
+  produtoId: string (FK -> Produto)
+  projetoId: string (FK -> Encarte)
+  valor: Decimal
+  valorPromo?: Decimal
+  valorAntigo?: Decimal
+  regraCompra?: string
+  validadeProd?: Date
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  produto: Produto
+  encarte: Encarte
+}
+```
+
+### ProdutoUso
+```typescript
+{
+  id: string (UUID)
+  ultimoValor: Decimal
+  descPerson?: string
+  produtoId: string (FK -> Produto)
+  empresaId: string (FK -> Empresa)
+  ultimoPreco: Decimal
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt?: DateTime
+  
+  // Relacionamentos
+  produto: Produto
+  empresa: Empresa
+}
+```
+
+### Enum TipoMidia
+```typescript
+enum TipoMidia {
+  D // Digital
+  I // Impresso  
+  V // Video
+}
+```
+
+## 🔐 Autenticação
+- JWT tokens
+- Guards para proteção de rotas
+- Passport strategies
+
+## 🎨 UI/UX
+- Interface moderna e responsiva
+- Foco na usabilidade para criação de encartes
+- Componentes reutilizáveis
+
+## 📝 Convenções de Nomenclatura
+- **Arquivos**: kebab-case (user-response.dto.ts)
+- **Classes**: PascalCase (UserResponseDto)
+- **Variáveis**: camelCase (isEmailConfirmed)
+- **Constantes**: UPPER_SNAKE_CASE (DATABASE_URL)
+
+## 🐛 Debug e Logs
+- Winston para logging no backend
+- Console.log apenas em desenvolvimento
+- Tratamento adequado de erros
+
+## 📚 Documentação
+- README.md atualizado
+- Comentários em código complexo
+- DTOs bem documentados
+
+---
+
+**Lembre-se**: Este é um projeto de produção. Sempre priorize qualidade, segurança e manutenibilidade do código. 
