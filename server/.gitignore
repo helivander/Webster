@@ -39,6 +39,14 @@ lerna-debug.log*
 
 upload
 
+# Uploads - ignore files but keep structure
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/logos/
+!/public/uploads/logos/.gitkeep
+!/public/uploads/backgrounds/
+!/public/uploads/backgrounds/.gitkeep
+
 #npm files
 
 package-lock.json

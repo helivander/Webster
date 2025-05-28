@@ -1,11 +1,26 @@
 import 'dotenv/config';
 import { LoggerService } from '../../modules/logger/logger.service';
-import { defaultPort } from '../../common/constants';
-class AppConfig {
-  constructor(private env: { [k: string]: string | undefined }) {}
+
+export class AppConfig {
+  private readonly port: number;
+  private readonly clientUrl: string;
+  private readonly serverUrl: string;
+  private readonly corsOrigins: string[];
+
+  constructor() {
+    this.port = parseInt(process.env.PORT || '8080', 10);
+    this.clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    this.serverUrl = process.env.SERVER_URL || 'http://localhost:8080';
+    this.corsOrigins = [
+      this.clientUrl,
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:5174',
+    ];
+  }
 
   private getValue(key: string, throwOnMissing = true): string {
-    const value = this.env[key];
+    const value = process.env[key];
     if (!value && throwOnMissing) {
       new LoggerService().error(`config error - missing env.${key}`, 'ENV');
     }
@@ -41,14 +56,12 @@ class AppConfig {
     return `${clientUrl}/auth/verify-email`;
   }
 
-  getPort(): string | number {
-    return this.getValue('PORT', false) || defaultPort;
+  getPort(): number {
+    return this.port;
   }
 
   getServerUrl(): string {
-    const port = this.getPort();
-    const host = this.getValue('HOST', false) || 'localhost';
-    return this.getValue('SERVER_URL', false) || `http://${host}:${port}`;
+    return this.serverUrl;
   }
 
   getFrontApiLink(): string {
@@ -81,9 +94,17 @@ class AppConfig {
       password: this.getValue('MAIL_PASSWORD', true),
     };
   }
+
+  getClientUrl(): string {
+    return this.clientUrl;
+  }
+
+  getCorsOrigins(): string[] {
+    return this.corsOrigins;
+  }
 }
 
-const appConfig = new AppConfig(process.env).ensureValues([
+const appConfig = new AppConfig().ensureValues([
   'PORT',
   'APP_SECRET',
   'JWT_EXPIRED',

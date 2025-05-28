@@ -3,7 +3,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  IsUrl,
+  Matches,
 } from 'class-validator';
 
 export class CreateMarcaDto {
@@ -14,7 +14,9 @@ export class CreateMarcaDto {
 
   @IsString({ message: 'O logo deve ser uma string' })
   @IsOptional()
-  @IsUrl({}, { message: 'O logo deve ser uma URL válida' })
+  @Matches(/^(https?:\/\/|\/public\/uploads\/logos\/).*/, {
+    message: 'O logo deve ser uma URL válida ou um caminho local válido',
+  })
   @MaxLength(400, { message: 'O logo deve ter no máximo 400 caracteres' })
   logo?: string;
 

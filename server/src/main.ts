@@ -8,14 +8,36 @@ import { LoggerService } from './modules/logger/logger.service';
 import { appConfig } from './shared/configs/app.config';
 import { fastifyHelmet } from '@fastify/helmet';
 import { PrismaService } from './shared/services/prisma.service';
-import { ValidationPipe } from './shared/pipes';
+import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './shared/filters';
 import fastifyStatic from '@fastify/static';
 import fastifyMultipart from '@fastify/multipart';
 import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 const port = appConfig.getPort();
 // const port = process.env.PORT || 8080;
+
+// Criar diretórios necessários
+const publicDir = join(process.cwd(), 'public');
+const uploadsDir = join(publicDir, 'uploads');
+const logosDir = join(uploadsDir, 'logos');
+
+if (!existsSync(publicDir)) {
+  mkdirSync(publicDir, { recursive: true });
+  console.log(`[Server] Diretório public criado: ${publicDir}`);
+}
+
+if (!existsSync(uploadsDir)) {
+  mkdirSync(uploadsDir, { recursive: true });
+  console.log(`[Server] Diretório uploads criado: ${uploadsDir}`);
+}
+
+if (!existsSync(logosDir)) {
+  mkdirSync(logosDir, { recursive: true });
+  console.log(`[Server] Diretório logos criado: ${logosDir}`);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -23,11 +45,16 @@ async function bootstrap() {
   );
 
   await app.register(fastifyMultipart, {
-    // attachFieldsToBody: true,
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB
+      files: 1,
+      fields: 10,
+    },
+    attachFieldsToBody: false,
   });
 
   await app.register(fastifyStatic, {
-    root: join(__dirname, 'public'),
+    root: join(process.cwd(), 'public'),
     prefix: '/public/',
   });
 
@@ -57,7 +84,7 @@ async function bootstrap() {
   await app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors({
-    origin: [process.env.CLIENT_URL, 'http://localhost:3000'],
+    origin: appConfig.getCorsOrigins(),
     credentials: true,
     exposedHeaders: ['Cross-Origin-Resource-Policy'],
   });
