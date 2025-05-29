@@ -63,7 +63,12 @@ const MarcaItem = ({ marca, onEdit }: MarcaItemProps) => {
   const getImageUrl = (path: string) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    return `${import.meta.env.VITE_API_URL}${path}`;
+    // Se o path já for o caminho completo (e.g. /public/uploads/logos/marcas/...), usa-o
+    if (path.startsWith('/public/uploads/logos/marcas/')) {
+      return `${import.meta.env.VITE_API_URL}${path}`;
+    }
+    // Fallback para caminhos mais antigos ou apenas nome do arquivo
+    return `${import.meta.env.VITE_API_URL}/public/uploads/logos/marcas/${path.split('/').pop()}`;
   };
 
   return (

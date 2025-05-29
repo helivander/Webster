@@ -44,6 +44,10 @@ upload
 !/public/uploads/.gitkeep
 !/public/uploads/logos/
 !/public/uploads/logos/.gitkeep
+!/public/uploads/logos/empresas/
+!/public/uploads/logos/empresas/.gitkeep
+!/public/uploads/logos/marcas/
+!/public/uploads/logos/marcas/.gitkeep
 !/public/uploads/backgrounds/
 !/public/uploads/backgrounds/.gitkeep
 

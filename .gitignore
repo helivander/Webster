@@ -42,3 +42,6 @@ upload
 #npm files
 
 package-lock.json
+
+# Uploads directory at root if created by mistake
+/public/

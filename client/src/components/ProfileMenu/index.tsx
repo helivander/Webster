@@ -133,11 +133,27 @@ const ProfileMenu = () => {
         description: description || '',
       };
       if (logo) {
-        // Ajustando a URL para usar o caminho correto do servidor
-        const formattedLogoUrl = logo.startsWith('http') ? logo : `${import.meta.env.VITE_API_URL}/uploads/logos/${logo.split('/').pop()}`;
-        console.log('[ProfileMenu useEffect] URL da logo formatada:', formattedLogoUrl);
-        formData.logo = formattedLogoUrl;
-        setLogoPreview(formattedLogoUrl);
+        // Se o logo já for uma URL completa, usa diretamente.
+        // Se for um caminho, verifica se já está no novo formato ou no formato antigo.
+        const cleanedLogoPath = logo.startsWith(import.meta.env.VITE_API_URL) 
+          ? logo.substring(import.meta.env.VITE_API_URL.length) 
+          : logo;
+
+        let fullLogoUrl;
+        if (cleanedLogoPath.startsWith('http')) { // Já é uma URL completa de terceiros
+          fullLogoUrl = cleanedLogoPath;
+        } else if (cleanedLogoPath.startsWith('/public/uploads/logos/empresas/')) { // Novo caminho correto
+          fullLogoUrl = `${import.meta.env.VITE_API_URL}${cleanedLogoPath}`;
+        } else if (cleanedLogoPath.startsWith('/public/uploads/logos/')) { // Caminho antigo sem subpasta 'empresas'
+           // Tenta adaptar, assumindo que o nome do arquivo é o que importa
+          fullLogoUrl = `${import.meta.env.VITE_API_URL}/public/uploads/logos/empresas/${cleanedLogoPath.split('/').pop()}`;
+        } else { // Fallback para nome de arquivo ou caminho muito antigo/inesperado
+          fullLogoUrl = `${import.meta.env.VITE_API_URL}/public/uploads/logos/empresas/${cleanedLogoPath.split('/').pop()}`;
+        }
+        
+        console.log('[ProfileMenu useEffect] URL da logo formatada:', fullLogoUrl);
+        formData.logo = fullLogoUrl; 
+        setLogoPreview(fullLogoUrl);
       } else {
         formData.logo = undefined;
         setLogoPreview(null);
@@ -197,20 +213,31 @@ const ProfileMenu = () => {
     let logoUrlToSave: string | undefined = undefined;
 
     if (typeof companyApiData.logo === 'string') {
-      logoUrlToSave = companyApiData.logo;
-      console.log('[ProfileMenu onSubmit] Usando logo existente (string/URL):', logoUrlToSave);
+      // Se companyApiData.logo for uma string, pode ser uma URL completa já existente ou 
+      // um caminho que o backend retornou (ex: /public/uploads/logos/...).
+      // O backend espera apenas o caminho relativo a partir de 'public', ou uma URL completa.
+      if (companyApiData.logo.startsWith(import.meta.env.VITE_API_URL)) {
+        // Remove o VITE_API_URL para obter o caminho relativo que o backend espera
+        logoUrlToSave = companyApiData.logo.substring(import.meta.env.VITE_API_URL.length);
+      } else {
+        logoUrlToSave = companyApiData.logo;
+      }
+      console.log('[ProfileMenu onSubmit] Usando logo existente (string/URL), ajustado para backend:', logoUrlToSave);
     } else if (companyApiData.logo instanceof File) {
       console.log('[ProfileMenu onSubmit] Tentando upload de novo arquivo de logo:', companyApiData.logo.name);
       const file = companyApiData.logo;
-      const formData = new FormData();
-      formData.append('file', file);
+      const formDataInstance = new FormData();
+      formDataInstance.append('file', file);
 
       try {
-        const uploadResponse = await uploadLogo(formData).unwrap();
-        logoUrlToSave = uploadResponse.filePath;
+        const uploadResponse = await uploadLogo(formDataInstance).unwrap();
+        // uploadResponse.url já vem formatado corretamente pelo backend (ex: /public/uploads/logos/...)
+        logoUrlToSave = uploadResponse.url;
         console.log('[ProfileMenu onSubmit] Upload bem-sucedido. URL da logo do servidor:', logoUrlToSave);
-        console.log('[ProfileMenu onSubmit] Atualizando logoPreview com URL do servidor.');
-        setLogoPreview(logoUrlToSave);
+        // Atualiza o preview com a URL completa, se necessário para exibição imediata
+        if (logoUrlToSave) {
+          setLogoPreview(logoUrlToSave.startsWith('http') ? logoUrlToSave : `${import.meta.env.VITE_API_URL}${logoUrlToSave}`);
+        }
         toast({
           title: 'Logo enviado com sucesso!',
           status: 'success',

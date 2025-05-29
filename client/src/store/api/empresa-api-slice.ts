@@ -8,9 +8,9 @@ interface UpdateEmpresaArg extends CreateEmpresaArg {
 
 interface UploadLogoResponse {
   message: string;
-  filePath: string;
+  url: string;
   filename: string;
-  originalname: string;
+  originalFilename: string;
   mimetype: string;
   size: number;
 }
