@@ -66,6 +66,8 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose }: Props) =>
         variant="outline"
         _hover={{ bgColor: hoverBg, cursor: 'pointer' }}
         sx={{ w: '100%', p: 4, borderRadius: '10px' }}
+        position="relative"
+        role="group"
       >
         <VStack spacing={2} sx={{ alignItems: 'flex-start', w: '100%' }}>
           <Box>
@@ -79,32 +81,49 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose }: Props) =>
           <Text w="100%" align="right" fontSize="14px" fontWeight="500">
             Última atualização: {formatDate(updatedAt)}
           </Text>
-          <Box sx={{ display: 'flex', w: '100%', justifyContent: 'flex-end', gap: 2 }}>
-            <IconButton
-              variant="outline"
-              colorScheme="pink"
-              isLoading={isDeleting}
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenDeleteModal();
-              }}
-              aria-label="remove-stage"
-              icon={<HiOutlineTrash />}
-            />
-            <IconButton
-              variant="outline"
-              colorScheme="pink"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenEditModal();
-              }}
-              aria-label="edit-stage"
-              icon={<HiOutlinePencil />}
-            />
-          </Box>
         </VStack>
+
+        {/* Ícones que aparecem só no hover */}
+        <Box
+          position="absolute"
+          top="3"
+          right="3"
+          display="flex"
+          gap={2}
+          opacity={0}
+          _groupHover={{ opacity: 1 }}
+          transition="opacity 0.2s"
+        >
+          <IconButton
+            variant="ghost"
+            colorScheme="blue"
+            size="sm"
+            bg="white"
+            _hover={{ bg: "blue.100" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenEditModal();
+            }}
+            aria-label="edit-stage"
+            icon={<HiOutlinePencil />}
+            shadow="md"
+          />
+          <IconButton
+            variant="ghost"
+            colorScheme="red"
+            isLoading={isDeleting}
+            size="sm"
+            bg="white"
+            _hover={{ bg: "red.100" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDeleteModal();
+            }}
+            aria-label="remove-stage"
+            icon={<HiOutlineTrash />}
+            shadow="md"
+          />
+        </Box>
       </Card>
 
       <Modal isOpen={isDeleteModalOpen} onClose={onCloseDeleteModal} isCentered>

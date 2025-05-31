@@ -212,7 +212,14 @@ const MarcaForm = ({ marca, onSuccess, onCancel }: MarcaFormProps) => {
         <FormLabel>Logo</FormLabel>
         <VStack spacing={3} align="stretch">
           {logo ? (
-            <Box position="relative" borderRadius="md" overflow="hidden" border="1px solid" borderColor="gray.200">
+            <Box 
+              position="relative" 
+              borderRadius="md" 
+              overflow="hidden" 
+              border="1px solid" 
+              borderColor="gray.200"
+              role="group"
+            >
               <Image
                 src={getImageUrl(logo)}
                 alt="Logo da marca"
@@ -221,16 +228,41 @@ const MarcaForm = ({ marca, onSuccess, onCancel }: MarcaFormProps) => {
                 objectFit="contain"
                 bg="gray.50"
               />
-              <IconButton
-                aria-label="Remover logo"
-                icon={<DeleteIcon />}
-                size="sm"
-                colorScheme="red"
+              {/* Ícones que aparecem só no hover */}
+              <HStack
                 position="absolute"
-                top={2}
-                right={2}
-                onClick={handleRemoveLogo}
-              />
+                top="2"
+                right="2"
+                spacing={1}
+                opacity={0}
+                _groupHover={{ opacity: 1 }}
+                transition="opacity 0.2s"
+              >
+                <IconButton
+                  aria-label="Alterar logo"
+                  icon={<AttachmentIcon />}
+                  size="sm"
+                  variant="ghost"
+                  colorScheme="blue"
+                  bg="white"
+                  _hover={{ bg: "blue.100" }}
+                  onClick={handleFileSelect}
+                  isDisabled={isLoading}
+                  shadow="md"
+                />
+                <IconButton
+                  aria-label="Remover logo"
+                  icon={<DeleteIcon />}
+                  size="sm"
+                  variant="ghost"
+                  colorScheme="red"
+                  bg="white"
+                  _hover={{ bg: "red.100" }}
+                  onClick={handleRemoveLogo}
+                  isDisabled={isLoading}
+                  shadow="md"
+                />
+              </HStack>
             </Box>
           ) : (
             <Flex
@@ -255,30 +287,6 @@ const MarcaForm = ({ marca, onSuccess, onCancel }: MarcaFormProps) => {
               </Text>
             </Flex>
           )}
-          
-          <HStack>
-            <Button
-              leftIcon={<AttachmentIcon />}
-              onClick={handleFileSelect}
-              isLoading={isUploadingLogo}
-              loadingText="Enviando..."
-              size="sm"
-              variant="outline"
-              flex={1}
-            >
-              {logo ? 'Alterar Logo' : 'Selecionar Logo'}
-            </Button>
-            {logo && (
-              <IconButton
-                aria-label="Remover logo"
-                icon={<DeleteIcon />}
-                onClick={handleRemoveLogo}
-                size="sm"
-                variant="outline"
-                colorScheme="red"
-              />
-            )}
-          </HStack>
         </VStack>
         
         <input

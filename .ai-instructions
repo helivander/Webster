@@ -328,3 +328,56 @@ enum TipoMidia {
 ---
 
 **Lembre-se**: Este é um projeto de produção. Sempre priorize qualidade, segurança e manutenibilidade do código. 
+
+Consideracoes tecnicas sobre o projeto:
+
+A ideia central dessa aplicacao seria os administradores criarem layouts de encartes contendo os seguintes elementos: 
+* Plano de fundo do encarte
+* Logo da empresa
+* Produtos do encarte
+* Campo de preco de cada produto
+* Campo de preco antigo de cada produto
+* Campo do nome do produto
+* Selo para o preco do produto
+* Selo para um produto destaque
+* Campo para uma informacao adicional para cada produto
+
+Com esse layout criado, os utilizadores do sistema teriam o seguinte fluxo de uso do sistema.
+* Escolher o layout pronto que mais o agrada.
+* Assim que o layout é escolhido o mesmo é aberto na tela do canvas ja aplicando a logo da empresa do usuario.
+* Logo após o usuario vai para a lista de produtos, previamente cadastrados, e clica no produto a sua escolha.
+* Ao clicar nesse produto é aberta uma popup para ele colocar os campos que o convém, o nome do produto é algo fixo,
+  o usuario nao pode mexer nesse campo, mas campos como preco, preco antigo e informacao adicional é oferecido nesse
+  popup e será exibido também as tres fotos do produto na popup listadas para o mesmo escolher qual lhe agrada.
+* Ao clicar em confirmar o produto vai para dentro do layout ja obedecendo os atributos do criador do layout como
+  x, y, fontSize, fill, fontFamily, taxado, underline, e outros atributos para os elementos de textos, 
+  os elementos de x, y, width, height, src, opacity, angle.
+* O usuário tera um maximo de produtos para por em cada layout, esse maximo sera definido pelo criador do layout, que
+  será os administradores do sistema.
+* Assim como os produtos, a logo da empresa ira para o layout ja posicionada dentro da sua grade predefinida pelo criador
+  do layout e coisas como opacidade tamanho angulo serao todos travados.
+
+
+No exemplo abaixo é ilustrado alguns elementos que compoem cada objeto que vai fazer parte do canvas.
+Esse é o conceito que preciso abstrair para montar o projeto de forma que o usuario coloque seus campos mas mantendo os atributos.
+[
+  {
+    "id": "text-1",
+    "type": "text",
+    "x": 100,
+    "y": 150,
+    "text": "Meu texto",
+    "fontSize": 24,
+    "fill": "#000000",
+    "fontFamily": "Arial"
+  },
+  {
+    "id": "image-1", 
+    "type": "image",
+    "x": 200,
+    "y": 300,
+    "width": 150,
+    "height": 100,
+    "src": "https://exemplo.com/imagem.jpg"
+  }
+]

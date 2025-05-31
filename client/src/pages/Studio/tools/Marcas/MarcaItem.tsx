@@ -83,6 +83,8 @@ const MarcaItem = ({ marca, onEdit }: MarcaItemProps) => {
         transition="background-color 0.2s"
         cursor="pointer"
         onClick={() => onEdit(marca)}
+        position="relative"
+        role="group"
       >
         <VStack spacing={2} align="stretch">
           {/* Logo da marca */}
@@ -145,38 +147,53 @@ const MarcaItem = ({ marca, onEdit }: MarcaItemProps) => {
               {marca.descricao}
             </Text>
           )}
-
-          {/* Ações */}
-          <HStack justify="center" spacing={1}>
-            <Tooltip label="Editar marca">
-              <IconButton
-                aria-label="Editar marca"
-                icon={<EditIcon />}
-                size="sm"
-                variant="ghost"
-                colorScheme="blue"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(marca);
-                }}
-              />
-            </Tooltip>
-            
-            <Tooltip label="Excluir marca">
-              <IconButton
-                aria-label="Excluir marca"
-                icon={<DeleteIcon />}
-                size="sm"
-                variant="ghost"
-                colorScheme="red"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpen();
-                }}
-              />
-            </Tooltip>
-          </HStack>
         </VStack>
+
+        {/* Ícones que aparecem só no hover */}
+        <HStack
+          position="absolute"
+          top="2"
+          right="2"
+          spacing={1}
+          opacity={0}
+          _groupHover={{ opacity: 1 }}
+          transition="opacity 0.2s"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Tooltip label="Editar marca">
+            <IconButton
+              aria-label="Editar marca"
+              icon={<EditIcon />}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+              bg="white"
+              _hover={{ bg: "blue.100" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(marca);
+              }}
+              shadow="md"
+            />
+          </Tooltip>
+          
+          <Tooltip label="Excluir marca">
+            <IconButton
+              aria-label="Excluir marca"
+              icon={<DeleteIcon />}
+              size="sm"
+              variant="ghost"
+              colorScheme="red"
+              bg="white"
+              _hover={{ bg: "red.100" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen();
+              }}
+              shadow="md"
+            />
+          </Tooltip>
+        </HStack>
       </Box>
 
       {/* Dialog de confirmação para exclusão */}

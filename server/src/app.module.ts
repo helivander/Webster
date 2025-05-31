@@ -7,6 +7,7 @@ import { UserModule } from './modules/user/user.module';
 import { CanvasModule } from './modules/canvas/canvas.module';
 import { EmpresaModule } from './modules/empresa/empresa.module';
 import { MarcaModule } from './modules/marca/marca.module';
+import { ProductModule } from './modules/product/product.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { UploadModule } from './modules/upload/upload.module';
 // import { UploadController } from './modules/upload.controller'; // Remover esta linha
@@ -20,6 +21,7 @@ import { UploadModule } from './modules/upload/upload.module';
     CanvasModule,
     EmpresaModule,
     MarcaModule,
+    ProductModule,
     UploadModule,
   ],
   providers: [LoggerService],
