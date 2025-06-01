@@ -45,11 +45,11 @@ const Navbar = () => {
       top={0}
       zIndex="sticky"
       borderBottom="1px"
-      borderColor="gray.200"
-      bg="white"
+      borderColor="pink.200"
+      bg="pink.50"
       _dark={{
-        borderColor: 'gray.700',
-        bg: 'gray.800',
+        borderColor: 'pink.700',
+        bg: 'pink.900',
       }}
     >
       <Flex px={4} h={14} alignItems="center" justifyContent="space-between">
