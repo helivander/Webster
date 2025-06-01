@@ -18,6 +18,12 @@ export class CreateCanvasResponseDto {
   authorId: string;
 
   @Expose()
+  width: number;
+
+  @Expose()
+  height: number;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()

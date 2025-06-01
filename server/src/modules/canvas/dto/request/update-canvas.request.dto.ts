@@ -1,5 +1,5 @@
 import { CreateCanvasRequestDto } from './create-canvas.request.dto';
-import { IsString } from 'class-validator';
+import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class UpdateCanvasRequestDto implements CreateCanvasRequestDto {
   @IsString()
@@ -10,4 +10,12 @@ export class UpdateCanvasRequestDto implements CreateCanvasRequestDto {
 
   @IsString()
   content: string;
+
+  @IsNumber()
+  @IsOptional()
+  width?: number;
+
+  @IsNumber()
+  @IsOptional()
+  height?: number;
 }

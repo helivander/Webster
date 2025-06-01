@@ -9,7 +9,7 @@ import { useUpdateCanvasMutation } from '~/store/api/canvas-slice';
 const CanvasContentSave = () => {
   const { stageObjects } = useStageObject();
   const [content, setContent] = useState('[]');
-  const { stage } = useAppSelector((state) => state.frame);
+  const { stage, width, height } = useAppSelector((state) => state.frame);
 
   const [update, { isLoading }] = useUpdateCanvasMutation();
 
@@ -38,6 +38,8 @@ const CanvasContentSave = () => {
       id: stage.id as string,
       name: stage.name as string,
       description: stage.description as string,
+      width: width,
+      height: height,
     };
 
     update({ ...stageValues, content })

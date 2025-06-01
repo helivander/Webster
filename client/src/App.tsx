@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { useLazyGetCanvasesQuery } from './store/api/canvas-slice';
 import Loader from './components/Loader/Loader';
 import { useDispatch } from 'react-redux';
-import { setStage } from './store/slices/frame-slice';
+import { setStage, setSize } from './store/slices/frame-slice';
 import ProfileView from './pages/Studio/canvas-actions/ProfileView';
 
 function App() {
@@ -31,6 +31,10 @@ function App() {
         }
         const firstStage = canvases[0];
         dispatch(setStage({ ...firstStage }));
+        dispatch(setSize({
+          width: firstStage.width || 1080,
+          height: firstStage.height || 1080
+        }));
       })
       .catch((err) => console.error(err));
   }, [isLoggedIn]);

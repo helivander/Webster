@@ -33,7 +33,10 @@ model Canvas {
   authorId    String    @db.Uuid
   name        String    @db.VarChar(50)
   description String    @db.VarChar(255)
-  content     Json
+  content     Json      @db.JsonB
+  background  String?
+  width       Int       @default(1080)
+  height      Int       @default(1080)
   createdAt   DateTime  @default(now()) @db.Timestamp
   updatedAt   DateTime  @default(now()) @db.Timestamp
 }

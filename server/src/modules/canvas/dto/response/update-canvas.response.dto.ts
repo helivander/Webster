@@ -15,6 +15,12 @@ export class UpdateCanvasResponseDto {
   content: string;
 
   @Expose()
+  width: number;
+
+  @Expose()
+  height: number;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()

@@ -15,6 +15,12 @@ export class GetCanvasResponseDto {
   content: JSON;
 
   @Expose()
+  width: number;
+
+  @Expose()
+  height: number;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()

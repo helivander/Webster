@@ -18,7 +18,7 @@ import {
 import { HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
 import { useDeleteCanvasMutation } from '~/store/api/canvas-slice';
-import { IStageState, resetStage, setStage } from '~/store/slices/frame-slice';
+import { IStageState, resetStage, setStage, setSize } from '~/store/slices/frame-slice';
 import { ICanvas } from '~/types/canvas';
 
 type Props = ICanvas & { 
@@ -26,13 +26,26 @@ type Props = ICanvas & {
   onEdit?: () => void;
 };
 
+// Comente sempre o trexo de código abaixo.
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(date));
 
-const CanvasViewItem = ({ id, name, description, updatedAt, onClose, onEdit }: Props) => {
+const CanvasViewItem = ({ 
+  id, 
+  name, 
+  description, 
+  updatedAt, 
+  createdAt,
+  background,
+  content,
+  width,
+  height,
+  onClose, 
+  onEdit 
+}: Props) => {
   const dispatch = useDispatch();
   const toast = useToast();
   const [deleteCanvas, { isLoading: isDeleting }] = useDeleteCanvasMutation();
@@ -46,18 +59,48 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose, onEdit }: P
   const bgCard = useColorModeValue('white', 'gray.700');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
+  // Função para selecionar o canvas
   const handleSelectStage = () => {
-    dispatch(setStage({ id, name, description }));
+    dispatch(setStage({ 
+      id, 
+      name, 
+      description,
+      background,
+      content,
+      updatedAt,
+      createdAt
+    }));
+    // TODO: Verificar se o width e height estão sendo passados corretamente
+    dispatch(setSize({
+      width: width || 1080,
+      height: height || 1080
+    }));
+
     onClose();
   };
 
   const handleEditClick = () => {
     if (onEdit) {
-      dispatch(setStage({ id, name, description }));
+      dispatch(setStage({ 
+        id, 
+        name, 
+        description,
+        background,
+        content,
+        updatedAt,
+        createdAt
+      }));
+
+      dispatch(setSize({
+        width: width || 1080,
+        height: height || 1080
+      }));
+
       onEdit();
     }
   };
 
+  // Função para excluir o canvas
   const removeStage = async () => {
     try {
       await deleteCanvas(id).unwrap();
@@ -84,59 +127,64 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose, onEdit }: P
   return (
     <>
       <Card
-        variant="outline"
+        p={4}
+        cursor="pointer"
+        onClick={handleSelectStage}
+        _hover={{ bg: hoverBg }}
         bg={bgCard}
         borderColor={borderColor}
-        _hover={{ borderColor: 'pink.500', cursor: 'pointer' }}
-        onClick={handleSelectStage}
+        borderWidth={1}
       >
-        <Box p={4} position="relative">
-          <VStack align="stretch" spacing={2}>
-            <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+        <VStack align="stretch" spacing={2}>
+          <Box>
+            <Text fontWeight="bold" fontSize="lg">
               {name}
             </Text>
-            <Text fontSize="sm" color="gray.500" noOfLines={2}>
+            <Text fontSize="sm" color="gray.500">
               {description}
             </Text>
+          </Box>
+          <Box>
             <Text fontSize="xs" color="gray.500">
               Última atualização: {new Date(updatedAt).toLocaleString()}
             </Text>
-          </VStack>
-
-          <Box
-            position="absolute"
-            top={2}
-            right={2}
-            display="flex"
-            gap={2}
-            onClick={(e) => e.stopPropagation()}
-          >
+          </Box>
+          <Box textAlign="right">
+            {onEdit && (
+              <IconButton
+                aria-label="Editar"
+                icon={<HiOutlinePencil />}
+                size="sm"
+                variant="ghost"
+                colorScheme="blue"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick();
+                }}
+              />
+            )}
             <IconButton
-              aria-label="Editar canvas"
-              icon={<HiOutlinePencil />}
-              size="sm"
-              colorScheme="blue"
-              variant="ghost"
-              onClick={handleEditClick}
-            />
-            <IconButton
-              aria-label="Excluir canvas"
+              aria-label="Excluir"
               icon={<HiOutlineTrash />}
               size="sm"
-              colorScheme="red"
               variant="ghost"
-              onClick={onOpenDeleteModal}
+              colorScheme="red"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDeleteModal();
+              }}
             />
           </Box>
-        </Box>
+        </VStack>
       </Card>
 
-      <Modal isOpen={isDeleteModalOpen} onClose={onCloseDeleteModal} isCentered>
+      {/* Modal de exclusão de canvas */}
+      <Modal isOpen={isDeleteModalOpen} onClose={onCloseDeleteModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Confirmar Exclusão</ModalHeader>
           <ModalBody>
-            <Text>Tem certeza que deseja excluir o canvas &quot;{name}&quot;? Esta ação não pode ser desfeita.</Text>
+            Tem certeza que deseja excluir o canvas &quot;{name}&quot;? Esta ação não pode ser desfeita.
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={onCloseDeleteModal}>

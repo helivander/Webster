@@ -6,7 +6,7 @@ import useStageObject from './use-stage-object';
 
 const useSaveContent = () => {
   const { stageObjects } = useStageObject();
-  const { stage } = useAppSelector((state) => state.frame);
+  const { stage, width, height } = useAppSelector((state) => state.frame);
   const [content, setContent] = useState('[]');
 
   const toast = useToast();
@@ -23,6 +23,8 @@ const useSaveContent = () => {
       id: stage.id as string,
       name: stage.name as string,
       description: stage.description as string,
+      width: width,
+      height: height,
     };
 
     update({ ...stageValues, content })
@@ -35,7 +37,7 @@ const useSaveContent = () => {
         });
       })
       .catch((err) => console.error(err));
-  }, [stage, content]);
+  }, [stage, content, width, height]);
 
   return { saveHandler };
 };

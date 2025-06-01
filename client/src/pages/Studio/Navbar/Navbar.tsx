@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { LOGO_FONT } from '~/consts/components';
 import { useAppSelector } from '~/hooks/use-app-selector';
-import { setStage } from '~/store/slices/frame-slice';
-import { useEffect } from 'react';
+import { setStage, setSize } from '~/store/slices/frame-slice';
+import { useEffect, useRef } from 'react';
 import { useLazyGetCanvasQuery } from '~/store/api/canvas-slice';
 import ProfileMenu from '~/components/ProfileMenu';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
@@ -14,42 +14,63 @@ const Navbar = () => {
   const { stage } = useAppSelector((state) => state.frame);
   const [getCanvas] = useLazyGetCanvasQuery();
   const { colorMode, toggleColorMode } = useColorMode();
+  const lastLoadedId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (stage.id) {
+    // Só carrega se houver um ID e se não for o mesmo que acabamos de carregar
+    if (stage.id && stage.id !== lastLoadedId.current) {
+      lastLoadedId.current = stage.id;
       getCanvas(stage.id)
         .unwrap()
         .then((data) => {
           dispatch(setStage({ ...data }));
+          // Atualiza as dimensões do canvas
+          dispatch(setSize({
+            width: data.width || 1080,
+            height: data.height || 1080
+          }));
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          lastLoadedId.current = null; // Reseta em caso de erro
+        });
     }
   }, [dispatch, getCanvas, stage.id]);
 
   return (
-    <Box>
-      <Flex bgGradient="linear(to-r, pink.500, purple.500)" py="2" align="center">
+    <Box
+      as="nav"
+      id="navbar"
+      position="sticky"
+      top={0}
+      zIndex="sticky"
+      borderBottom="1px"
+      borderColor="gray.200"
+      bg="white"
+      _dark={{
+        borderColor: 'gray.700',
+        bg: 'gray.800',
+      }}
+    >
+      <Flex px={4} h={14} alignItems="center" justifyContent="space-between">
         <Link to="/">
           <Heading
-            fontSize="28px"
-            fontWeight="400"
-            userSelect="none"
-            color="white"
-            ml="20px"
-            mb="0"
+            as="h1"
+            fontSize="xl"
             fontFamily={LOGO_FONT}
+            bgGradient="linear(to-r, pink.400, pink.600)"
+            bgClip="text"
           >
-            Encartei
+            Webster
           </Heading>
         </Link>
-        <HStack spacing={4} ml="auto" pr={4}>
+
+        <HStack spacing={4}>
           <IconButton
-            aria-label="Alternar modo escuro"
+            aria-label="Alternar tema"
             icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
             onClick={toggleColorMode}
             variant="ghost"
-            color="white"
-            _hover={{ bg: 'gray.700' }}
           />
           <ProfileMenu />
         </HStack>

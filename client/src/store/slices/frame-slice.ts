@@ -6,6 +6,7 @@ export type IStageState = {
   name: string | null;
   description: string | null;
   content?: string | StageObject[] | null;
+  background?: string | null;
 };
 
 export type IFrameState = {
@@ -21,6 +22,7 @@ const initialState: IFrameState = {
     name: null,
     description: null,
     content: null,
+    background: null,
   },
   width: 1080,
   height: 1080,
@@ -36,12 +38,14 @@ const frameSlice = createSlice({
       state.stage.name = payload.name || null;
       state.stage.description = payload.description || null;
       state.stage.content = payload.content || [];
+      state.stage.background = payload.background || null;
     },
     resetStage(state) {
       state.stage.id = null;
       state.stage.name = null;
       state.stage.description = null;
       state.stage.content = null;
+      state.stage.background = null;
     },
     setSize(state, { payload }) {
       state.width = payload.width;
