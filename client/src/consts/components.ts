@@ -7,17 +7,18 @@ import {
   HiOutlineTemplate,
   HiOutlineTag,
   HiOutlineCube,
+  HiOutlineViewGrid,
 } from 'react-icons/hi';
 
 export const TOOLBAR_TABS = [
   { icon: HiOutlineTemplate, title: 'Models' },
   { icon: HiOutlineArrowsExpand, title: 'Resize' },
-  { icon: HiOutlineDownload, title: 'Export' },
   { icon: HiOutlinePhotograph, title: 'Images' },
   { icon: HiOutlineCloudUpload, title: 'Upload' },
   { icon: HiOutlineTranslate, title: 'Text' },
   { icon: HiOutlineTag, title: 'Marcas' },
   { icon: HiOutlineCube, title: 'Produtos' },
+  { icon: HiOutlineViewGrid, title: 'Layout' },
   //  { icon: HiOutlineCube, title: 'Shapes' },
   //  { icon: HiOutlineInformationCircle, title: 'Hotkeys' },
 ];

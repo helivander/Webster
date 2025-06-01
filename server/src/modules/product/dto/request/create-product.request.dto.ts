@@ -55,4 +55,4 @@ export class CreateProductRequestDto {
   @IsString()
   @MaxLength(50)
   codsys?: string;
-} 
+}

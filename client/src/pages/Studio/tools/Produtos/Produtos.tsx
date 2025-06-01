@@ -44,25 +44,11 @@ const Produtos = () => {
     onOpen();
   };
 
-  const handleAddToCanvas = (produto: Produto) => {
-    // Função para construir URL da imagem
-    const buildImageUrl = (path?: string | null): string => {
-      if (!path) return '';
-      
-      // Se o path já for o caminho completo (e.g. /public/uploads/produtos/...), usa-o
-      if (path.startsWith('/public/uploads/produtos/')) {
-        return `${import.meta.env.VITE_API_URL}${path}`;
-      }
-      // Caso contrário, assume que é apenas o nome do arquivo
-      return `${import.meta.env.VITE_API_URL}/public/uploads/produtos/${path.split('/').pop()}`;
-    };
-
-    const imageUrl = buildImageUrl(produto.imagem);
-    
+  const handleAddToCanvas = (produto: Produto, imageUrl: string) => {
     if (!imageUrl) {
       toast({
         title: 'Erro',
-        description: 'Este produto não possui uma imagem principal.',
+        description: 'Imagem não encontrada.',
         status: 'error',
         duration: 3000,
       });

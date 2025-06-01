@@ -38,7 +38,7 @@ const Studio = () => {
           <Toolbar stageRef={stageRef} />
         </Box>
         <Box flexGrow="1">
-          <EditingToolbar />
+          <EditingToolbar stageRef={stageRef} />
           <Center
             h={`calc(100vh - ${navbarHeight}px - ${editingToolbarHeight}px)`}
             bgColor={bgCanvas}

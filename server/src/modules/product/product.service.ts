@@ -166,4 +166,4 @@ export class ProductService {
       deletedAt: produto.deletedAt?.toISOString() || null,
     };
   }
-} 
+}

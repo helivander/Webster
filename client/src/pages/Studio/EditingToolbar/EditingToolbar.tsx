@@ -1,7 +1,7 @@
 import { HStack, Icon, IconButton, Spacer, Tooltip, useColorModeValue } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { HiOutlineRefresh, HiOutlineReply, HiOutlineTrash } from 'react-icons/hi';
+import { HiOutlineRefresh, HiOutlineReply, HiOutlineTrash, HiOutlineDownload } from 'react-icons/hi';
 import { EDITING_TOOLBAR_HEIGHT } from '~/consts/components';
 import { KeyType } from '~/consts/keys';
 import { useAppSelector } from '~/hooks/use-app-selector';
@@ -14,11 +14,18 @@ import ShapesEditing from './ShapesEditing/ShapesEditing';
 import TextEditing from './TextEditing/TextEditing';
 import CanvasContentSave from '../canvas-actions/CanvasContentSave';
 import useStageObject from '~/hooks/use-stage-object';
+import Konva from 'konva';
+import React from 'react';
 
-const EditingToolbar = () => {
+type Props = {
+  stageRef: React.RefObject<Konva.Stage>;
+};
+
+const EditingToolbar = ({ stageRef }: Props) => {
   const stageObjects = useAppSelector(stageObjectSelector.selectAll);
   const { selected } = useAppSelector((state) => state.selected);
   const { isLoggedIn } = useAppSelector((state) => state.auth);
+  const { width, height } = useAppSelector((state) => state.frame);
   const { removeOne } = useStageObject();
 
   const { savePast, goBack, goForward } = useHistory();
@@ -60,6 +67,22 @@ const EditingToolbar = () => {
   const handleDelete = () => {
     if (selectedObject) {
       removeOne(selectedObject.id);
+    }
+  };
+
+  const handleExport = () => {
+    if (stageRef?.current) {
+      const dataURL = stageRef.current.toDataURL({
+        x: stageRef.current.attrs.x,
+        y: stageRef.current.attrs.y,
+        width: width * stageRef.current.scaleX(),
+        height: height * stageRef.current.scaleY(),
+        pixelRatio: 1 / stageRef.current.attrs.scaleX,
+      });
+      const link = document.createElement('a');
+      link.download = 'webster';
+      link.href = dataURL;
+      link.click();
     }
   };
 
@@ -111,6 +134,14 @@ const EditingToolbar = () => {
         <>
           <Spacer />
           <CanvasContentSave />
+          <Tooltip hasArrow label="Exportar imagem" placement="bottom" openDelay={500}>
+            <IconButton
+              aria-label="Exportar imagem"
+              icon={<Icon as={HiOutlineDownload} boxSize={5} />}
+              onClick={handleExport}
+              colorScheme="pink"
+            />
+          </Tooltip>
         </>
       )}
     </HStack>

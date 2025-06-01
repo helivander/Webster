@@ -356,7 +356,7 @@ Com esse layout criado, os utilizadores do sistema teriam o seguinte fluxo de us
   será os administradores do sistema.
 * Assim como os produtos, a logo da empresa ira para o layout ja posicionada dentro da sua grade predefinida pelo criador
   do layout e coisas como opacidade tamanho angulo serao todos travados.
-
+*
 
 No exemplo abaixo é ilustrado alguns elementos que compoem cada objeto que vai fazer parte do canvas.
 Esse é o conceito que preciso abstrair para montar o projeto de forma que o usuario coloque seus campos mas mantendo os atributos.
@@ -372,12 +372,20 @@ Esse é o conceito que preciso abstrair para montar o projeto de forma que o usu
     "fontFamily": "Arial"
   },
   {
-    "id": "image-1", 
+    "id": "image-1",
     "type": "image",
     "x": 200,
     "y": 300,
     "width": 150,
     "height": 100,
-    "src": "https://exemplo.com/imagem.jpg"
+    "src": "https://exemplo.com/imagem.jpg" //coringa-logo
   }
 ]
+
+Para futura implementacao:
+Insira um botao de adicionar logo do encarte na aba que se abre ao editar um model.
+exibir esse botao de upload exiba tres modelos de tamanhos comuns de logos.
+1:1 ou seja quadrada
+1:3 logo retangular
+4:3 logo vertical
+Ai o usuario escolhe uma dessas e  essa logo de exemplo vai para o canvas, para ele definir a sua dimensao respeitando as proporcoes originais e localizacao no modelo

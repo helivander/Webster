@@ -18,4 +18,4 @@ export class ProductResponseDto {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
-} 
+}

@@ -19,19 +19,37 @@ import { useGetCanvasesQuery, useCreateCanvasMutation } from '~/store/api/canvas
 import CanvasViewItem from '~/pages/Studio/canvas-actions/CanvasViewItem';
 import { AddIcon } from '@chakra-ui/icons';
 import CanvasCreateForm from '~/pages/Studio/canvas-actions/CanvasCreateForm';
+import CanvasEdit from './CanvasEdit';
+import { useAppSelector } from '~/hooks/use-app-selector';
+
+type ViewMode = 'list' | 'edit';
 
 const Models = () => {
   // estado para controlar o termo de busca
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [, { isLoading: isCreating }] = useCreateCanvasMutation();
   const { data, isLoading } = useGetCanvasesQuery({
     skip: 0,
     take: 10,
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { stage } = useAppSelector((state) => state.frame);
 
   if (isLoading) {
     return <Text>Carregando modelos...</Text>;
+  }
+
+  const handleEditClick = () => {
+    setViewMode('edit');
+  };
+
+  const handleBackToList = () => {
+    setViewMode('list');
+  };
+
+  if (viewMode === 'edit') {
+    return <CanvasEdit onBack={handleBackToList} />;
   }
 
   return (
@@ -60,6 +78,7 @@ const Models = () => {
               <CanvasViewItem
                 key={canvas.id}
                 {...canvas}
+                onEdit={handleEditClick}
                 onClose={() => {
                   // TODO: Implementar lógica de fechamento
                   console.log('Fechando canvas:', canvas.id);

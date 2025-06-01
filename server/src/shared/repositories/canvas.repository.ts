@@ -55,6 +55,7 @@ export class CanvasRepository {
           name: true,
           description: true,
           authorId: true,
+          background: true,
           createdAt: true,
           updatedAt: true,
         },

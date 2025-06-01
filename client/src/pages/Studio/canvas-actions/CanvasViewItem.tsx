@@ -13,7 +13,6 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  ModalCloseButton,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi';
@@ -21,9 +20,11 @@ import { useDispatch } from 'react-redux';
 import { useDeleteCanvasMutation } from '~/store/api/canvas-slice';
 import { IStageState, resetStage, setStage } from '~/store/slices/frame-slice';
 import { ICanvas } from '~/types/canvas';
-import CanvasUpdateForm from './CanvasUpdateForm';
 
-type Props = ICanvas & { onClose: VoidFunction };
+type Props = ICanvas & { 
+  onClose: VoidFunction;
+  onEdit?: () => void;
+};
 
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat('pt-BR', {
@@ -31,98 +32,102 @@ const formatDate = (date: string) =>
     timeStyle: 'short',
   }).format(new Date(date));
 
-const CanvasViewItem = ({ id, name, description, updatedAt, onClose }: Props) => {
+const CanvasViewItem = ({ id, name, description, updatedAt, onClose, onEdit }: Props) => {
   const dispatch = useDispatch();
-  const [remove, { isLoading: isDeleting }] = useDeleteCanvasMutation();
   const toast = useToast();
-  const { isOpen: isDeleteModalOpen, onOpen: onOpenDeleteModal, onClose: onCloseDeleteModal } = useDisclosure();
-  const { isOpen: isEditModalOpen, onOpen: onOpenEditModal, onClose: onCloseEditModal } = useDisclosure();
+  const [deleteCanvas, { isLoading: isDeleting }] = useDeleteCanvasMutation();
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onOpenDeleteModal,
+    onClose: onCloseDeleteModal,
+  } = useDisclosure();
   const hoverBg = useColorModeValue('gray.100', 'gray.700');
 
-  const changeStage = (stage: IStageState) => {
-    dispatch(setStage({ ...stage }));
+  const bgCard = useColorModeValue('white', 'gray.700');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+
+  const handleSelectStage = () => {
+    dispatch(setStage({ id, name, description }));
     onClose();
   };
 
-  const removeStage = () => {
-    remove(id)
-      .then(() => {
-        dispatch(resetStage());
-        toast({
-          title: 'Seu canvas foi removido com sucesso.',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        });
-        onCloseDeleteModal();
-      })
-      .catch((err) => console.error(err));
+  const handleEditClick = () => {
+    if (onEdit) {
+      dispatch(setStage({ id, name, description }));
+      onEdit();
+    }
+  };
+
+  const removeStage = async () => {
+    try {
+      await deleteCanvas(id).unwrap();
+      dispatch(resetStage());
+      onCloseDeleteModal();
+      toast({
+        title: 'Canvas excluído com sucesso!',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Erro ao excluir canvas:', error);
+      toast({
+        title: 'Erro ao excluir canvas',
+        description: 'Não foi possível excluir o canvas. Tente novamente.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
     <>
       <Card
-        onClick={() => changeStage({ id, name, description })}
         variant="outline"
-        _hover={{ bgColor: hoverBg, cursor: 'pointer' }}
-        sx={{ w: '100%', p: 4, borderRadius: '10px' }}
-        position="relative"
-        role="group"
+        bg={bgCard}
+        borderColor={borderColor}
+        _hover={{ borderColor: 'pink.500', cursor: 'pointer' }}
+        onClick={handleSelectStage}
       >
-        <VStack spacing={2} sx={{ alignItems: 'flex-start', w: '100%' }}>
-          <Box>
-            <Text fontSize="18px" fontWeight="600" color="pink.500">
+        <Box p={4} position="relative">
+          <VStack align="stretch" spacing={2}>
+            <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
               {name}
             </Text>
-            <Text fontSize="16px" fontWeight="500" color="pink.500">
+            <Text fontSize="sm" color="gray.500" noOfLines={2}>
               {description}
             </Text>
-          </Box>
-          <Text w="100%" align="right" fontSize="14px" fontWeight="500">
-            Última atualização: {formatDate(updatedAt)}
-          </Text>
-        </VStack>
+            <Text fontSize="xs" color="gray.500">
+              Última atualização: {new Date(updatedAt).toLocaleString()}
+            </Text>
+          </VStack>
 
-        {/* Ícones que aparecem só no hover */}
-        <Box
-          position="absolute"
-          top="3"
-          right="3"
-          display="flex"
-          gap={2}
-          opacity={0}
-          _groupHover={{ opacity: 1 }}
-          transition="opacity 0.2s"
-        >
-          <IconButton
-            variant="ghost"
-            colorScheme="blue"
-            size="sm"
-            bg="white"
-            _hover={{ bg: "blue.100" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenEditModal();
-            }}
-            aria-label="edit-stage"
-            icon={<HiOutlinePencil />}
-            shadow="md"
-          />
-          <IconButton
-            variant="ghost"
-            colorScheme="red"
-            isLoading={isDeleting}
-            size="sm"
-            bg="white"
-            _hover={{ bg: "red.100" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDeleteModal();
-            }}
-            aria-label="remove-stage"
-            icon={<HiOutlineTrash />}
-            shadow="md"
-          />
+          <Box
+            position="absolute"
+            top={2}
+            right={2}
+            display="flex"
+            gap={2}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <IconButton
+              aria-label="Editar canvas"
+              icon={<HiOutlinePencil />}
+              size="sm"
+              colorScheme="blue"
+              variant="ghost"
+              onClick={handleEditClick}
+            />
+            <IconButton
+              aria-label="Excluir canvas"
+              icon={<HiOutlineTrash />}
+              size="sm"
+              colorScheme="red"
+              variant="ghost"
+              onClick={onOpenDeleteModal}
+            />
+          </Box>
         </Box>
       </Card>
 
@@ -141,17 +146,6 @@ const CanvasViewItem = ({ id, name, description, updatedAt, onClose }: Props) =>
               Excluir
             </Button>
           </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      <Modal isOpen={isEditModalOpen} onClose={onCloseEditModal} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Editar Canvas</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <CanvasUpdateForm onClose={onCloseEditModal} />
-          </ModalBody>
         </ModalContent>
       </Modal>
     </>
