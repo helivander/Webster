@@ -33,13 +33,13 @@ const formatDate = (date: string) =>
     timeStyle: 'short',
   }).format(new Date(date));
 
+// TODO: Verificar se o width e height estão sendo passados corretamente
 const CanvasViewItem = ({ 
   id, 
   name, 
   description, 
   updatedAt, 
   createdAt,
-  background,
   content,
   width,
   height,
@@ -61,38 +61,39 @@ const CanvasViewItem = ({
 
   // Função para selecionar o canvas
   const handleSelectStage = () => {
+    // Primeiro, define o tamanho do canvas
+    dispatch(setSize({
+      width: width || 1920,
+      height: height || 1080
+    }));
+
+    // Depois, define o estado do stage com o conteúdo parseado
     dispatch(setStage({ 
       id, 
       name, 
       description,
-      background,
-      content,
+      content: typeof content === 'string' ? JSON.parse(content) : content,
       updatedAt,
       createdAt
-    }));
-    // TODO: Verificar se o width e height estão sendo passados corretamente
-    dispatch(setSize({
-      width: width || 1080,
-      height: height || 1080
     }));
 
     onClose();
   };
 
+  // Função para editar o canvas
   const handleEditClick = () => {
     if (onEdit) {
       dispatch(setStage({ 
         id, 
         name, 
         description,
-        background,
         content,
         updatedAt,
         createdAt
       }));
 
       dispatch(setSize({
-        width: width || 1080,
+        width: width || 1920,
         height: height || 1080
       }));
 
@@ -142,11 +143,6 @@ const CanvasViewItem = ({
             </Text>
             <Text fontSize="sm" color="gray.500">
               {description}
-            </Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500">
-              Última atualização: {new Date(updatedAt).toLocaleString()}
             </Text>
           </Box>
           <Box textAlign="right">

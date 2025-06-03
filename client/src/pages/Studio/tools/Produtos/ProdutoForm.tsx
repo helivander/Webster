@@ -257,11 +257,11 @@ const ProdutoForm = ({ produto, onSuccess, onCancel }: ProdutoFormProps) => {
     console.log('📁 Arquivo selecionado:', file.name, file.type, file.size);
 
     // Validar tipo de arquivo
-    if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+    if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
       console.error('❌ Tipo de arquivo inválido:', file.type);
       toast({
         title: 'Erro',
-        description: 'Apenas arquivos de imagem (JPEG, PNG, GIF) são permitidos',
+        description: 'Apenas arquivos de imagem (JPEG, PNG, GIF, WEBP) são permitidos',
         status: 'error',
         duration: 5000,
       });

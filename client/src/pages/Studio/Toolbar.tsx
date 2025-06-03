@@ -1,10 +1,7 @@
 import { Flex, Icon, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from '@chakra-ui/react';
 import Konva from 'konva';
 import { TOOLBAR_TABS } from '~/consts/components';
-import Export from './tools/Export';
-import ImageUpload from './tools/ImageUpload/ImageUpload';
 import Images from './tools/Images/Images';
-import Resize from './tools/Resize';
 import Texts from './tools/Text/Texts';
 import Models from './tools/Models/Models';
 import Marcas from './tools/Marcas/Marcas';
@@ -62,14 +59,8 @@ const Toolbar = ({ stageRef }: Props) => {
           <TabPanel>
             <Models />
           </TabPanel>
-          <TabPanel>
-            <Resize />
-          </TabPanel>
           <TabPanel p="0" h="100%" overflow="hidden">
             <Images />
-          </TabPanel>
-          <TabPanel>
-            <ImageUpload />
           </TabPanel>
           <TabPanel p="0" h="100%" overflow="hidden">
             <Texts />

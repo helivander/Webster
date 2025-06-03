@@ -5,11 +5,13 @@ import CanvasCreateForm from './CanvasCreateForm';
 import useStageObject from '~/hooks/use-stage-object';
 import { useEffect, useState } from 'react';
 import { useUpdateCanvasMutation } from '~/store/api/canvas-slice';
+import { selectFrameDimensions, selectStage } from '~/store/slices/frame-slice';
 
 const CanvasContentSave = () => {
   const { stageObjects } = useStageObject();
   const [content, setContent] = useState('[]');
-  const { stage, width, height } = useAppSelector((state) => state.frame);
+  const stage = useAppSelector(selectStage);
+  const { width, height } = useAppSelector(selectFrameDimensions);
 
   const [update, { isLoading }] = useUpdateCanvasMutation();
 

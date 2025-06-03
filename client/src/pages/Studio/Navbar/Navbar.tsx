@@ -43,25 +43,21 @@ const Navbar = () => {
       id="navbar"
       position="sticky"
       top={0}
-      zIndex="sticky"
-      borderBottom="1px"
-      borderColor="pink.200"
-      bg="pink.50"
-      _dark={{
-        borderColor: 'pink.700',
-        bg: 'pink.900',
-      }}
+      borderBottom="0px"
+      bgGradient="linear(to-r, pink.500, purple.500)"
+      zIndex={1000}
     >
+      {/* TODO: Adicionar o logo do encartei */}
       <Flex px={4} h={14} alignItems="center" justifyContent="space-between">
         <Link to="/">
           <Heading
             as="h1"
             fontSize="xl"
             fontFamily={LOGO_FONT}
-            bgGradient="linear(to-r, pink.400, pink.600)"
+            bgGradient="linear(to-r, pink.100, pink.100)"
             bgClip="text"
           >
-            Webster
+            Encartei
           </Heading>
         </Link>
 

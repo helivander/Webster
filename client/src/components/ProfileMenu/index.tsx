@@ -320,11 +320,45 @@ const ProfileMenu = () => {
           <Avatar size="sm" name={user?.name} src={avatarDisplayUrl} mr={2} />
           <Text display={{ base: 'none', md: 'inline' }}>{user?.name}</Text>
         </MenuButton>
-        <MenuList>
-          <MenuItem onClick={onOpen}>Perfil</MenuItem>
-          <MenuItem onClick={onSettingsOpen}>Configurações</MenuItem>
+
+        {/* TODO: Adicionar o menu list com o background transparent */}
+        <MenuList bg="white" _dark={{ bg: 'gray.800' }} zIndex={1100}>
+          <MenuItem 
+            onClick={onOpen} 
+            _dark={{ 
+              color: 'white',
+              bg: 'transparent',
+              _hover: { bg: 'whiteAlpha.200' }
+            }} 
+            _hover={{ bg: 'gray.100' }}
+          >
+            Perfil
+          </MenuItem>
+          <MenuItem 
+            onClick={onSettingsOpen}
+            bg="transparent"
+            _dark={{ 
+              color: 'white',
+              bg: 'transparent',
+              _hover: { bg: 'whiteAlpha.200' }
+            }}
+            _hover={{ bg: 'gray.100' }}
+          >
+            Configurações
+          </MenuItem>
           <MenuDivider />
-          <MenuItem onClick={handleLogout}>Sair</MenuItem>
+          <MenuItem 
+            onClick={handleLogout}
+            bg="transparent"
+            _dark={{ 
+              color: 'white',
+              bg: 'transparent',
+              _hover: { bg: 'whiteAlpha.200' }
+            }}
+            _hover={{ bg: 'gray.100' }}
+          >
+            Sair
+          </MenuItem>
         </MenuList>
       </Menu>
 
@@ -386,7 +420,7 @@ const ProfileMenu = () => {
                               )}
                               <Input
                                 type="file"
-                                accept="image/png, image/jpeg, image/gif"
+                                accept="image/png, image/jpeg, image/gif, image/webp"
                                 {...register('logo')}
                                 ref={fileInputRef}
                                 onChange={handleLogoChange}

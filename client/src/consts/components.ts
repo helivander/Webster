@@ -1,6 +1,4 @@
 import {
-  HiOutlineArrowsExpand,
-  HiOutlineCloudUpload,
   HiOutlineDownload,
   HiOutlinePhotograph,
   HiOutlineTranslate,
@@ -12,9 +10,7 @@ import {
 
 export const TOOLBAR_TABS = [
   { icon: HiOutlineTemplate, title: 'Models' },
-  { icon: HiOutlineArrowsExpand, title: 'Resize' },
   { icon: HiOutlinePhotograph, title: 'Images' },
-  { icon: HiOutlineCloudUpload, title: 'Upload' },
   { icon: HiOutlineTranslate, title: 'Text' },
   { icon: HiOutlineTag, title: 'Marcas' },
   { icon: HiOutlineCube, title: 'Produtos' },

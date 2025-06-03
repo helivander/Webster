@@ -52,6 +52,7 @@ const Models = () => {
     return <CanvasEdit onBack={handleBackToList} />;
   }
 
+  // TODO: Implementar lógica de fechamento
   return (
     <VStack align="stretch">
       <Flex align="center" justify="flex-start" p={2}>

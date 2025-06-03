@@ -12,6 +12,7 @@ import {
   Text,
   Image,
   useDisclosure,
+  Select,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -22,36 +23,39 @@ import { ArrowBackIcon, AttachmentIcon, DeleteIcon, AddIcon } from '@chakra-ui/i
 import { useRef, useEffect } from 'react';
 import { useUpload } from '~/hooks/useUpload';
 import { useDispatch } from 'react-redux';
-import { setStage } from '~/store/slices/frame-slice';
+import { selectFrameDimensions, selectStage, setSize } from '~/store/slices/frame-slice';
 import LogoModal from './LogoModal';
+import useStageObject from '~/hooks/use-stage-object';
+import { DEFAULT_IMAGE_OBJECT } from '~/consts/stage-object';
+import { standardDimensions } from '~/consts/dimensions';
 
 type Props = {
   onBack: () => void;
 };
 
 const CanvasEdit = ({ onBack }: Props) => {
-  const { stage } = useAppSelector((state) => state.frame);
-  const frameState = useAppSelector((state) => ({ width: state.frame.width, height: state.frame.height }));
+  const stage = useAppSelector(selectStage);
+  const frameState = useAppSelector(selectFrameDimensions);
   const [update, { isLoading }] = useUpdateCanvasMutation();
   const toast = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadBackground, deleteBackground, isLoading: isUploadingImagem } = useUpload();
   const initialMount = useRef(true);
+  const isEditing = useRef(true); // Flag para indicar que estamos no modo de edição
   const dispatch = useDispatch();
   const { isOpen: isLogoModalOpen, onOpen: onLogoModalOpen, onClose: onLogoModalClose } = useDisclosure();
+  const { stageObjects, createOne, removeOne } = useStageObject();
 
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<ICreate>({
     resolver: zodResolver(createSchema),
     defaultValues: {
       name: stage.name || '',
       description: stage.description || '',
-      background: stage.background || '',
     },
   });
 
@@ -60,54 +64,57 @@ const CanvasEdit = ({ onBack }: Props) => {
     if (initialMount.current) {
       setValue('name', stage.name || '');
       setValue('description', stage.description || '');
-      setValue('background', stage.background || '');
       initialMount.current = false;
     }
   }, [stage, setValue]);
 
-  const background = watch('background');
+  // Encontra o objeto de plano de fundo atual
+  const backgroundObject = stageObjects.find(obj => obj.data.systype === 'background');
 
+  // Salva automaticamente quando os objetos do stage mudam
+  useEffect(() => {
+    // Evita salvar quando não há mudanças significativas ou quando está no modo de edição
+    if (!stage.id || isEditing.current) {
+      return;
+    }
+
+    const saveCanvas = async () => {
+      try {
+        await update({
+          id: stage.id as string,
+          name: stage.name || '',
+          description: stage.description || '',
+          width: frameState.width,
+          height: frameState.height,
+          content: JSON.stringify(stageObjects),
+        }).unwrap();
+      } catch (error) {
+        console.error('Erro ao salvar canvas:', error);
+      }
+    };
+
+    // Pequeno delay para garantir que todas as atualizações do estado foram processadas
+    const timeoutId = setTimeout(() => {
+      saveCanvas();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [stage.id, stage.name, stage.description, frameState.width, frameState.height, stageObjects, update]);
+
+  // Função para selecionar o arquivo de fundo
   const handleFileSelect = () => {
     fileInputRef.current?.click();
   };
 
-  const handleRemoveBackground = async () => {
-    if (background) {
-      try {
-        // Extrai o nome do arquivo da URL
-        const filename = background.split('/').pop();
-        if (filename) {
-          await deleteBackground(filename);
-          setValue('background', '');
-          // Atualiza o stage removendo o background
-          dispatch(setStage({ ...stage, background: '' }));
-          toast({
-            title: 'Sucesso',
-            description: 'Plano de fundo removido com sucesso!',
-            status: 'success',
-            duration: 3000,
-          });
-        }
-      } catch (error) {
-        console.error('Erro ao remover plano de fundo:', error);
-        toast({
-          title: 'Erro',
-          description: 'Erro ao remover plano de fundo',
-          status: 'error',
-          duration: 5000,
-        });
-      }
-    }
-  };
-
+  // Função para alterar o arquivo de fundo
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+    if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
       toast({
         title: 'Erro',
-        description: 'Apenas arquivos de imagem (JPEG, PNG, GIF) são permitidos',
+        description: 'Apenas arquivos de imagem (JPEG, PNG, GIF, WEBP) são permitidos',
         status: 'error',
         duration: 5000,
       });
@@ -126,10 +133,12 @@ const CanvasEdit = ({ onBack }: Props) => {
 
     try {
       // Se já existe um background, remove ele primeiro
-      if (background) {
-        const oldFilename = background.split('/').pop();
+      if (backgroundObject) {
+        const oldFilename = backgroundObject.data.src.split('/').pop();
         if (oldFilename) {
           await deleteBackground(oldFilename);
+          // Remove o objeto antigo do stage
+          removeOne(backgroundObject.id);
         }
       }
 
@@ -137,11 +146,20 @@ const CanvasEdit = ({ onBack }: Props) => {
       if (!response.url) {
         throw new Error('URL da imagem não retornada pelo servidor');
       }
-      setValue('background', response.url);
-      
-      // Atualiza o stage com o novo background
-      dispatch(setStage({ ...stage, background: response.url }));
-      
+
+      // Cria o objeto de imagem com systype: 'background'
+      createOne({
+        ...DEFAULT_IMAGE_OBJECT,
+        src: response.url,
+        x: 0,
+        y: 0,
+        width: frameState.width,
+        height: frameState.height,
+        draggable: true,
+        systype: 'background',
+        z_index: -1 // Garante que o background fique sempre atrás dos outros elementos
+      });
+
       toast({
         title: 'Sucesso',
         description: 'Imagem de fundo enviada com sucesso!',
@@ -162,6 +180,36 @@ const CanvasEdit = ({ onBack }: Props) => {
     }
   };
 
+  const handleRemoveBackground = async () => {
+    try {
+      // Remove o objeto de imagem com systype: 'background'
+      if (backgroundObject) {
+        const filename = backgroundObject.data.src.split('/').pop();
+        if (filename) {
+          await deleteBackground(filename);
+          // Remove o objeto do stage
+          removeOne(backgroundObject.id);
+        }
+      }
+      
+      toast({
+        title: 'Sucesso',
+        description: 'Plano de fundo removido com sucesso!',
+        status: 'success',
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Erro ao remover plano de fundo:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao remover plano de fundo',
+        status: 'error',
+        duration: 5000,
+      });
+    }
+  };
+
+  // Função para salvar as alterações do canvas
   const onSubmit = async (data: ICreate) => {
     if (!stage.id) {
       toast({
@@ -174,14 +222,16 @@ const CanvasEdit = ({ onBack }: Props) => {
     }
 
     try {
+      // Prepara o conteúdo atual do canvas
+      const content = JSON.stringify(stageObjects);
+
       await update({
         id: stage.id,
         name: data.name,
         description: data.description,
-        background: data.background,
         width: frameState.width,
         height: frameState.height,
-        content: typeof stage.content === 'string' ? stage.content : JSON.stringify(stage.content || []),
+        content: content,
       }).unwrap();
 
       toast({
@@ -191,6 +241,7 @@ const CanvasEdit = ({ onBack }: Props) => {
         duration: 3000,
       });
 
+      isEditing.current = false; // Desativa o modo de edição após salvar
       onBack();
     } catch (error) {
       toast({
@@ -221,6 +272,20 @@ const CanvasEdit = ({ onBack }: Props) => {
     
     // Se for apenas o nome do arquivo, constrói o caminho completo
     return `${import.meta.env.VITE_API_URL}/public/uploads/backgrounds/${path}`;
+  };
+
+  // Função para lidar com a mudança de dimensão
+  const handleDimensionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedDimension = standardDimensions.find(
+      (dim) => `${dim.width}x${dim.height}` === e.target.value
+    );
+
+    if (selectedDimension) {
+      dispatch(setSize({
+        width: selectedDimension.width,
+        height: selectedDimension.height
+      }));
+    }
   };
 
   return (
@@ -258,98 +323,112 @@ const CanvasEdit = ({ onBack }: Props) => {
             </FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.background}>
-            <FormLabel>Plano de Fundo</FormLabel>
-            <VStack spacing={2} align="center">
-              {background ? (
-                <Box position="relative" display="inline-block" role="group">
-                  <Image
-                    src={getImageUrl(background)}
-                    alt="Plano de fundo"
-                    boxSize="200px"
-                    objectFit="cover"
-                    borderRadius="lg"
-                    border="2px solid"
-                    borderColor="gray.200"
-                    shadow="sm"
-                  />
-                  <HStack
-                    position="absolute"
-                    top="1"
-                    right="1"
-                    spacing={1}
-                    opacity={0}
-                    _groupHover={{ opacity: 1 }}
-                    transition="opacity 0.2s"
-                  >
-                    <IconButton
-                      aria-label="Alterar plano de fundo"
-                      icon={<AttachmentIcon />}
-                      size="xs"
-                      variant="solid"
-                      colorScheme="blue"
-                      onClick={handleFileSelect}
-                      isDisabled={isLoading || isUploadingImagem}
-                    />
-                    <IconButton
-                      aria-label="Remover plano de fundo"
-                      icon={<DeleteIcon />}
-                      size="xs"
-                      variant="solid"
-                      colorScheme="red"
-                      onClick={handleRemoveBackground}
-                      isDisabled={isLoading}
-                    />
-                  </HStack>
-                </Box>
-              ) : (
-                <Box
-                  border="2px dashed"
-                  borderColor="gray.300"
-                  borderRadius="lg"
-                  p={4}
-                  textAlign="center"
-                  cursor="pointer"
-                  _hover={{ borderColor: "pink.400", bg: "pink.50", transform: "scale(1.02)" }}
-                  onClick={handleFileSelect}
-                  bg={isLoading || isUploadingImagem ? "gray.100" : "white"}
-                  width="200px"
-                  height="200px"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  transition="all 0.2s"
-                  shadow="sm"
-                >
-                  <VStack spacing={1}>
-                    <AttachmentIcon boxSize={5} color="gray.400" />
-                    <Text color="gray.500" fontSize="xs" fontWeight="medium">
-                      Adicionar plano de fundo
-                    </Text>
-                  </VStack>
-                </Box>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-                disabled={isLoading || isUploadingImagem}
-              />
-              {isUploadingImagem && (
-                <Text fontSize="xs" color="blue.500" mt={3} textAlign="center">
-                  Enviando imagem...
-                </Text>
-              )}
-              <Text fontSize="xs" color="gray.500" mt={3} textAlign="center">
-                Formatos aceitos: JPEG, PNG, GIF (máx. 5MB)
-              </Text>
-            </VStack>
-            <FormErrorMessage>
-              {errors.background?.message}
-            </FormErrorMessage>
+          {/* Select de Dimensões Padrão */}
+          <FormControl>
+            <FormLabel>Dimensões Padrão</FormLabel>
+            <Select
+              placeholder="Selecione um tamanho padrão"
+              onChange={handleDimensionChange}
+              value={`${frameState.width}x${frameState.height}`}
+            >
+              {standardDimensions.map((dim) => (
+                <option key={`${dim.width}x${dim.height}`} value={`${dim.width}x${dim.height}`}>
+                  {dim.label} ({dim.width}x{dim.height})
+                </option>
+              ))}
+            </Select>
+            <Text fontSize="xs" color="gray.500" mt={1}>
+              Dimensões atuais: {frameState.width}x{frameState.height}
+            </Text>
           </FormControl>
+
+          {/* Upload de Plano de Fundo */}
+          <VStack spacing={2} align="center">
+            {backgroundObject ? (
+              <Box position="relative" display="inline-block" role="group">
+                <Image
+                  src={getImageUrl(backgroundObject.data.src)}
+                  alt="Plano de fundo"
+                  boxSize="200px"
+                  objectFit="cover"
+                  borderRadius="lg"
+                  border="2px solid"
+                  borderColor="gray.200"
+                  shadow="sm"
+                />
+                <HStack
+                  position="absolute"
+                  top="1"
+                  right="1"
+                  spacing={1}
+                  opacity={0}
+                  _groupHover={{ opacity: 1 }}
+                  transition="opacity 0.2s"
+                >
+                  <IconButton
+                    aria-label="Alterar plano de fundo"
+                    icon={<AttachmentIcon />}
+                    size="xs"
+                    variant="solid"
+                    colorScheme="blue"
+                    onClick={handleFileSelect}
+                    isDisabled={isLoading || isUploadingImagem}
+                  />
+                  <IconButton
+                    aria-label="Remover plano de fundo"
+                    icon={<DeleteIcon />}
+                    size="xs"
+                    variant="solid"
+                    colorScheme="red"
+                    onClick={handleRemoveBackground}
+                    isDisabled={isLoading}
+                  />
+                </HStack>
+              </Box>
+            ) : (
+              <Box
+                border="2px dashed"
+                borderColor="gray.300"
+                borderRadius="lg"
+                p={4}
+                textAlign="center"
+                cursor="pointer"
+                _hover={{ borderColor: "pink.400", bg: "pink.50", transform: "scale(1.02)" }}
+                onClick={handleFileSelect}
+                bg={isLoading || isUploadingImagem ? "gray.100" : "white"}
+                width="200px"
+                height="200px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                transition="all 0.2s"
+                shadow="sm"
+              >
+                <VStack spacing={1}>
+                  <AttachmentIcon boxSize={5} color="gray.400" />
+                  <Text color="gray.500" fontSize="xs" fontWeight="medium">
+                    Adicionar plano de fundo
+                  </Text>
+                </VStack>
+              </Box>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+              disabled={isLoading || isUploadingImagem}
+            />
+            {isUploadingImagem && (
+              <Text fontSize="xs" color="blue.500" mt={3} textAlign="center">
+                Enviando imagem...
+              </Text>
+            )}
+            <Text fontSize="xs" color="gray.500" mt={3} textAlign="center">
+              Formatos aceitos: JPEG, PNG, GIF, WEBP (máx. 5MB)
+            </Text>
+          </VStack>
 
           {/* Botão de Adicionar Logo */}
           <Button

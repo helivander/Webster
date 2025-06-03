@@ -3,7 +3,6 @@ import { z } from 'zod';
 export const createSchema = z.object({
   name: z.string(),
   description: z.string(),
-  background: z.string().optional(),
   width: z.number().min(10).max(10000).optional(),
   height: z.number().min(10).max(10000).optional(),
 });

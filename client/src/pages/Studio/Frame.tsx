@@ -38,50 +38,6 @@ const Frame = ({ stageRef }: IProps) => {
   const { width, height, scale, stage } = useAppSelector((state) => state.frame);
   const { boxWidth, boxHeight, handleZoom, handleDragMoveStage } = useStageResize({ stageRef });
 
-  // Carrega a imagem de fundo
-  const [backgroundImage, backgroundStatus] = useImage(stage.background || '', 'background');
-
-  // Atualiza o background quando ele for removido
-  useEffect(() => {
-    if (!stage.background) {
-      // Força a atualização do background quando ele for removido
-      const stageInstance = stageRef?.current;
-      if (stageInstance) {
-        const layer = stageInstance.findOne('Layer') as Konva.Layer;
-        if (layer) {
-          layer.batchDraw();
-        }
-      }
-      // Restaura o tamanho padrão do canvas
-      dispatch(setSize({ width: 1080, height: 1080 }));
-    }
-  }, [stage.background, stageRef]);
-
-  // Ajusta o tamanho do canvas quando a imagem de fundo é carregada
-  useEffect(() => {
-    if (backgroundStatus === 'loaded' && backgroundImage) {
-      // Obtém as dimensões da imagem
-      const imgWidth = backgroundImage.width;
-      const imgHeight = backgroundImage.height;
-
-      // Calcula a proporção para manter o aspecto da imagem
-      const maxWidth = 1920; // Largura máxima permitida
-      const maxHeight = 1920; // Altura máxima permitida
-      let newWidth = imgWidth;
-      let newHeight = imgHeight;
-
-      // Se a imagem for maior que o tamanho máximo, redimensiona mantendo a proporção
-      if (imgWidth > maxWidth || imgHeight > maxHeight) {
-        const ratio = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
-        newWidth = Math.floor(imgWidth * ratio);
-        newHeight = Math.floor(imgHeight * ratio);
-      }
-
-      // Atualiza o tamanho do canvas
-      dispatch(setSize({ width: newWidth, height: newHeight }));
-    }
-  }, [backgroundStatus, backgroundImage]);
-
   useEffect(() => {
     const fontsToLoad = stageObjects
       .filter((obj) => obj.data.type === StageObjectType.TEXT && obj.data.webFont)
@@ -155,15 +111,6 @@ const Frame = ({ stageRef }: IProps) => {
         onDragMove={handleDragMoveStage}
       >
         <Layer>
-          {/* Renderiza o background se estiver carregado */}
-          {backgroundStatus === 'loaded' && backgroundImage && (
-            <KonvaImage
-              image={backgroundImage}
-              width={width}
-              height={height}
-              listening={false}
-            />
-          )}
           {sortStageObject().map((obj) => (
             <React.Fragment key={obj.id}>{renderStageObject(obj)}</React.Fragment>
           ))}
@@ -187,19 +134,8 @@ const Frame = ({ stageRef }: IProps) => {
           <Transformer
             ref={multiTransformer}
             onTransformEnd={onMultiTransformerEnd}
-            enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
-            boundBoxFunc={(oldBox, newBox) => {
-              const node = multiTransformer.current?.getNode();
-              if (node && node.attrs.name?.startsWith('logo-')) {
-                const ratio = oldBox.width / oldBox.height;
-                newBox.width = Math.max(30, newBox.width);
-                newBox.height = newBox.width / ratio;
-              } else {
-                newBox.width = Math.max(30, newBox.width);
-              }
-              return newBox;
-            }}
             ignoreStroke={true}
+            keepRatio={true}
           />
         </Layer>
       </Stage>
