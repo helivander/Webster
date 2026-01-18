@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "extendedWhereUnique"]
 }
 
@@ -17,89 +17,104 @@ model User {
   companyId        String?   @db.Uuid
   foto             String?   @db.VarChar(500)
   createdAt        DateTime  @default(now()) @db.Timestamp
-  updatedAt        DateTime  @default(now()) @db.Timestamp
+  updatedAt        DateTime  @default(now()) @updatedAt @db.Timestamp
   deletedAt        DateTime? @db.Timestamp
-  
+
   // Relacionamentos
-  canvases         Canvas[]
-  empresas         Empresa[]
-  templates        Template[]
-  encartes         Encarte[]
+  canvases  Canvas[]
+  empresas  Empresa[]
+  templates Template[]
+  encartes  Encarte[]
+
+  @@index([email])
+  @@index([username])
 }
 
 model Canvas {
-  id          String    @id @default(uuid()) @db.Uuid
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    String    @db.Uuid
-  name        String    @db.VarChar(50)
-  description String    @db.VarChar(255)
+  id          String   @id @default(uuid()) @db.Uuid
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String   @db.Uuid
+  name        String   @db.VarChar(50)
+  description String   @db.VarChar(255)
   content     Json
-  createdAt   DateTime  @default(now()) @db.Timestamp
-  updatedAt   DateTime  @default(now()) @db.Timestamp
+  createdAt   DateTime @default(now()) @db.Timestamp
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp
+
+  @@index([authorId])
 }
 
 model Marca {
-  id          String     @id @default(uuid()) @db.Uuid
-  nome        String     @db.VarChar(100)
-  logo        String?    @db.VarChar(400)
-  descricao   String?    @db.VarChar(255)
-  createdAt   DateTime   @default(now()) @db.Timestamp
-  updatedAt   DateTime   @default(now()) @db.Timestamp
-  deletedAt   DateTime?  @db.Timestamp
-  
+  id        String    @id @default(uuid()) @db.Uuid
+  nome      String    @db.VarChar(100)
+  logo      String?   @db.VarChar(400)
+  descricao String?   @db.VarChar(255)
+  createdAt DateTime  @default(now()) @db.Timestamp
+  updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp
+  deletedAt DateTime? @db.Timestamp
+
   // Relacionamentos
-  produtos    Produto[]
+  produtos Produto[]
+
+  @@index([nome])
 }
 
 model Produto {
-  id            String     @id @default(uuid()) @db.Uuid
-  marca         Marca      @relation(fields: [marcaId], references: [id])
-  marcaId       String     @db.Uuid
-  nome          String     @db.VarChar(100)
-  preco         Decimal    @db.Decimal(10,2)
-  descricao     String?    @db.VarChar(500)
-  tags          String?    @db.VarChar(255)
-  adicional     String?    @db.VarChar(255)
-  foto1         String     @db.VarChar(400)
-  foto2         String?    @db.VarChar(400)
-  foto3         String?    @db.VarChar(400)
-  tipo          String     @db.VarChar(50)
-  barcode       String?    @db.VarChar(50)
-  codsys        String?    @db.VarChar(50)
+  id             String    @id @default(uuid()) @db.Uuid
+  marca          Marca     @relation(fields: [marcaId], references: [id])
+  marcaId        String    @db.Uuid
+  nome           String    @db.VarChar(100)
+  preco          Decimal   @db.Decimal(10, 2)
+  descricao      String?   @db.VarChar(500)
+  tags           String?   @db.VarChar(255)
+  adicional      String?   @db.VarChar(255)
+  foto1          String    @db.VarChar(400)
+  foto2          String?   @db.VarChar(400)
+  foto3          String?   @db.VarChar(400)
+  tipo           String    @db.VarChar(50)
+  barcode        String?   @db.VarChar(50)
+  codsys         String?   @db.VarChar(50)
   descricaocurta String?   @db.VarChar(150)
-  createdAt     DateTime   @default(now()) @db.Timestamp
-  updatedAt     DateTime   @default(now()) @db.Timestamp
-  deletedAt     DateTime?  @db.Timestamp
+  createdAt      DateTime  @default(now()) @db.Timestamp
+  updatedAt      DateTime  @default(now()) @updatedAt @db.Timestamp
+  deletedAt      DateTime? @db.Timestamp
 
   // Relacionamentos
-  encarteItems  EncarteItem[]
-  produtoUsos   ProdutoUso[]
+  encarteItems EncarteItem[]
+  produtoUsos  ProdutoUso[]
+
+  @@index([marcaId])
+  @@index([nome])
+  @@index([barcode])
+  @@index([tipo])
 }
 
 model Template {
-  id               String    @id @default(uuid()) @db.Uuid
-  nome             String    @db.VarChar(100)
-  largura          Int
-  altura           Int
-  quantImagem      Int       @default(1)
-  imgFundo         String?   @db.VarChar(400)
-  fonte            String?   @db.VarChar(100)
-  textoCabecalho   String?   @db.VarChar(500)
-  textoRodape      String?   @db.VarChar(500)
-  midia            TipoMidia
-  dpi              Int?
-  author           User      @relation(fields: [authorId], references: [id])
-  authorId         String    @db.Uuid
-  description      String?   @db.VarChar(255)
-  conteudoJson     Json?
-  carimboPreco     String?   @db.VarChar(100)
-  carimboTituloProd String?  @db.VarChar(100)
-  createdAt        DateTime  @default(now()) @db.Timestamp
-  updatedAt        DateTime  @default(now()) @db.Timestamp
-  deletedAt        DateTime? @db.Timestamp
+  id                String    @id @default(uuid()) @db.Uuid
+  nome              String    @db.VarChar(100)
+  largura           Int
+  altura            Int
+  quantImagem       Int       @default(1)
+  imgFundo          String?   @db.VarChar(400)
+  fonte             String?   @db.VarChar(100)
+  textoCabecalho    String?   @db.VarChar(500)
+  textoRodape       String?   @db.VarChar(500)
+  midia             TipoMidia
+  dpi               Int?
+  author            User      @relation(fields: [authorId], references: [id])
+  authorId          String    @db.Uuid
+  description       String?   @db.VarChar(255)
+  conteudoJson      Json?
+  carimboPreco      String?   @db.VarChar(100)
+  carimboTituloProd String?   @db.VarChar(100)
+  createdAt         DateTime  @default(now()) @db.Timestamp
+  updatedAt         DateTime  @default(now()) @updatedAt @db.Timestamp
+  deletedAt         DateTime? @db.Timestamp
 
   // Relacionamentos
-  encartes         Encarte[]
+  encartes Encarte[]
+
+  @@index([authorId])
+  @@index([nome])
 }
 
 model Empresa {
@@ -112,7 +127,7 @@ model Empresa {
   logo        String?   @db.VarChar(400)
   description String?   @db.VarChar(500)
   createdAt   DateTime  @default(now()) @db.Timestamp
-  updatedAt   DateTime  @default(now()) @db.Timestamp
+  updatedAt   DateTime  @default(now()) @updatedAt @db.Timestamp
   deletedAt   DateTime? @db.Timestamp
   usuario     User      @relation(fields: [usuarioId], references: [id])
   usuarioId   String    @db.Uuid
@@ -120,24 +135,32 @@ model Empresa {
   // Relacionamentos
   encartes    Encarte[]
   produtoUsos ProdutoUso[]
+
+  @@index([usuarioId])
+  @@index([name])
+  @@index([cnpj])
 }
 
 model Encarte {
-  id           String    @id @default(uuid()) @db.Uuid
-  user         User      @relation(fields: [userId], references: [id])
-  userId       String    @db.Uuid
-  template     Template  @relation(fields: [modelId], references: [id])
-  modelId      String    @db.Uuid
-  empresa      Empresa   @relation(fields: [empresaId], references: [id])
-  empresaId    String    @db.Uuid
-  encarteJson  Json?
-  avisosEncarte String?  @db.Text
-  createdAt    DateTime  @default(now()) @db.Timestamp
-  updatedAt    DateTime  @default(now()) @db.Timestamp
-  deletedAt    DateTime? @db.Timestamp
+  id            String    @id @default(uuid()) @db.Uuid
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String    @db.Uuid
+  template      Template  @relation(fields: [modelId], references: [id])
+  modelId       String    @db.Uuid
+  empresa       Empresa   @relation(fields: [empresaId], references: [id])
+  empresaId     String    @db.Uuid
+  encarteJson   Json?
+  avisosEncarte String?   @db.Text
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  updatedAt     DateTime  @default(now()) @updatedAt @db.Timestamp
+  deletedAt     DateTime? @db.Timestamp
 
   // Relacionamentos
   encarteItems EncarteItem[]
+
+  @@index([userId])
+  @@index([modelId])
+  @@index([empresaId])
 }
 
 model EncarteItem {
@@ -146,28 +169,34 @@ model EncarteItem {
   produtoId    String    @db.Uuid
   encarte      Encarte   @relation(fields: [projetoId], references: [id])
   projetoId    String    @db.Uuid
-  valor        Decimal   @db.Decimal(10,2)
-  valorPromo   Decimal?  @db.Decimal(10,2)
-  valorAntigo  Decimal?  @db.Decimal(10,2)
+  valor        Decimal   @db.Decimal(10, 2)
+  valorPromo   Decimal?  @db.Decimal(10, 2)
+  valorAntigo  Decimal?  @db.Decimal(10, 2)
   regraCompra  String?   @db.VarChar(255)
   validadeProd DateTime? @db.Date
   createdAt    DateTime  @default(now()) @db.Timestamp
-  updatedAt    DateTime  @default(now()) @db.Timestamp
+  updatedAt    DateTime  @default(now()) @updatedAt @db.Timestamp
   deletedAt    DateTime? @db.Timestamp
+
+  @@index([produtoId])
+  @@index([projetoId])
 }
 
 model ProdutoUso {
-  id           String    @id @default(uuid()) @db.Uuid
-  ultimoValor  Decimal   @db.Decimal(10,2)
-  descPerson   String?   @db.VarChar(255)
-  produto      Produto   @relation(fields: [produtoId], references: [id])
-  produtoId    String    @db.Uuid
-  empresa      Empresa   @relation(fields: [empresaId], references: [id])
-  empresaId    String    @db.Uuid
-  ultimoPreco  Decimal   @db.Decimal(10,2)
-  createdAt    DateTime  @default(now()) @db.Timestamp
-  updatedAt    DateTime  @default(now()) @db.Timestamp
-  deletedAt    DateTime? @db.Timestamp
+  id          String    @id @default(uuid()) @db.Uuid
+  ultimoValor Decimal   @db.Decimal(10, 2)
+  descPerson  String?   @db.VarChar(255)
+  produto     Produto   @relation(fields: [produtoId], references: [id])
+  produtoId   String    @db.Uuid
+  empresa     Empresa   @relation(fields: [empresaId], references: [id])
+  empresaId   String    @db.Uuid
+  ultimoPreco Decimal   @db.Decimal(10, 2)
+  createdAt   DateTime  @default(now()) @db.Timestamp
+  updatedAt   DateTime  @default(now()) @updatedAt @db.Timestamp
+  deletedAt   DateTime? @db.Timestamp
+
+  @@index([produtoId])
+  @@index([empresaId])
 }
 
 enum TipoMidia {
@@ -175,4 +204,3 @@ enum TipoMidia {
   I // Impresso
   V // Video
 }
-

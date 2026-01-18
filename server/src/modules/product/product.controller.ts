@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   BadRequestException,
   Body,
@@ -16,17 +17,16 @@ import { JWTAuthGuard } from '../../shared/guards/jwt.guard';
 import { HttpUser } from '../../shared/decorators/user.decorator';
 import { HttpUserPayload } from '../../shared/types/http-user-payload.type';
 import { CreateProductRequestDto } from './dto/request/create-product.request.dto';
+import { UpdateProductRequestDto } from './dto/request/update-product.request.dto';
 import { ProductResponseDto } from './dto/response/product.response.dto';
 
-//controller para o produto
 @Controller('products')
 @UseGuards(JWTAuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  //funcao para criar o produto
   @Post()
-  @HttpCode(200)
+  @HttpCode(201)
   async create(
     @HttpUser() user: HttpUserPayload,
     @Body() productData: CreateProductRequestDto,
@@ -41,14 +41,29 @@ export class ProductController {
     }
   }
 
-  //funcao para pegar todos os produtos
   @Get()
   @HttpCode(200)
   findAll(@HttpUser() user: HttpUserPayload): Promise<ProductResponseDto[]> {
     return this.productService.findAll(user.id);
   }
 
-  //funcao para pegar o produto pelo id
+  @Get('search')
+  @HttpCode(200)
+  search(@Query('q') query: string): Promise<ProductResponseDto[]> {
+    if (!query || query.trim().length === 0) {
+      throw new BadRequestException('Query de busca é obrigatória');
+    }
+    return this.productService.search(query);
+  }
+
+  @Get('marca/:marcaId')
+  @HttpCode(200)
+  findByMarca(
+    @Param('marcaId', ParseUUIDPipe) marcaId: string,
+  ): Promise<ProductResponseDto[]> {
+    return this.productService.findByMarca(marcaId);
+  }
+
   @Get(':id')
   @HttpCode(200)
   findOne(
@@ -58,13 +73,12 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  //funcao para atualizar o produto
   @Patch(':id')
   @HttpCode(200)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @HttpUser() user: HttpUserPayload,
-    @Body() productData: Partial<CreateProductRequestDto>,
+    @Body() productData: UpdateProductRequestDto,
   ): Promise<ProductResponseDto> {
     try {
       return await this.productService.update(id, productData);
@@ -76,7 +90,6 @@ export class ProductController {
     }
   }
 
-  //funcao para deletar o produto
   @Delete(':id')
   @HttpCode(200)
   remove(

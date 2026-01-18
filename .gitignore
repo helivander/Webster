@@ -37,7 +37,8 @@ lerna-debug.log*
 .env
 .yarn
 
-upload
+/upload
+!/server/src/modules/upload
 
 #npm files
 
